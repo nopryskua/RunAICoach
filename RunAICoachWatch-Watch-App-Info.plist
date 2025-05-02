@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>Allow saving your workout data to Health</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Allow updating live workout metrics</string>
+    <key>NSHealthReadUsageDescription</key>
+    <string>Allow reading heart rate and distance for live coaching</string>
+</dict>
+</plist>
