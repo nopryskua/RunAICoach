@@ -5,12 +5,14 @@
 //  Created by Nestor Oprysk on 5/3/25.
 //
 
+// TODO: Check if all imports necessary
+
 import SwiftUI
 import HealthKit
 import Combine
 import WatchConnectivity
 
-class HealthKitManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
+class HealthKitManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate, WCSessionDelegate {
     private let healthStore = HKHealthStore()
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?
@@ -20,19 +22,23 @@ class HealthKitManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HK
 
     override init() {
         super.init()
+        // Activate WatchConnectivity session
+        if WCSession.isSupported() {
+            let wc = WCSession.default
+            wc.delegate = self
+            wc.activate()
+        }
         requestAuthorization()
     }
 
     func requestAuthorization() {
-        let readTypes: Set = [
+        let types: Set<HKSampleType> = [
             HKQuantityType.quantityType(forIdentifier: .heartRate)!,
             HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!,
             HKObjectType.workoutType()
         ]
-        healthStore.requestAuthorization(toShare: readTypes, read: readTypes) { success, error in
-            if let error = error {
-                print("HK Auth Error: \(error)")
-            }
+        healthStore.requestAuthorization(toShare: types, read: types) { success, error in
+            if let error = error { print("HK Auth Error: \(error)") }
         }
     }
 
@@ -46,9 +52,7 @@ class HealthKitManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HK
             builder = session?.associatedWorkoutBuilder()
             session?.delegate = self
             builder?.delegate = self
-
-            builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
-                                                         workoutConfiguration: config)
+            builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: config)
 
             session?.startActivity(with: Date())
             builder?.beginCollection(withStart: Date()) { _, _ in }
@@ -61,9 +65,7 @@ class HealthKitManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HK
         session?.end()
         builder?.endCollection(withEnd: Date()) { _, _ in
             self.builder?.finishWorkout { _, error in
-                if let error = error {
-                    print("Finish workout error: \(error)")
-                }
+                if let error = error { print("Finish workout error: \(error)") }
             }
         }
     }
@@ -78,37 +80,38 @@ class HealthKitManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HK
         updateMetrics(from: workoutBuilder, types: types)
         sendMetrics()
     }
-
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
-        // Handle workout builder events, e.g., pause, resume, lap
-        // You can inspect workoutBuilder.workoutEvents here if needed
-        print("WorkoutBuilder did collect event: \(workoutBuilder.workoutEvents.last?.type.rawValue ?? -1)")
+        print("Workout event: \(workoutBuilder.workoutEvents.last?.type.rawValue ?? -1)")
     }
 
     private func updateMetrics(from builder: HKLiveWorkoutBuilder, types: Set<HKSampleType>) {
         for type in types {
-            guard let quantityType = type as? HKQuantityType,
-                  let statistics = builder.statistics(for: quantityType) else { continue }
-            switch quantityType {
+            guard let qtyType = type as? HKQuantityType,
+                  let stats = builder.statistics(for: qtyType) else { continue }
+            switch qtyType {
             case HKQuantityType.quantityType(forIdentifier: .heartRate):
-                if let val = statistics.mostRecentQuantity()?.doubleValue(
-                    for: HKUnit.count().unitDivided(by: HKUnit.minute())) {
+                if let val = stats.mostRecentQuantity()?.doubleValue(for: HKUnit.count().unitDivided(by: .minute())) {
                     DispatchQueue.main.async { self.heartRate = val }
                 }
             case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning):
-                if let val = statistics.sumQuantity()?.doubleValue(for: HKUnit.meter()) {
+                if let val = stats.sumQuantity()?.doubleValue(for: HKUnit.meter()) {
                     DispatchQueue.main.async { self.distance = val }
                 }
-            default:
-                break
+            default: break
             }
         }
     }
 
     private func sendMetrics() {
-        let message: [String: Any] = ["heartRate": heartRate, "distance": distance]
-        WCSession.default.sendMessage(message, replyHandler: nil) { error in
+        let msg: [String: Any] = ["heartRate": heartRate, "distance": distance]
+        WCSession.default.sendMessage(msg, replyHandler: nil) { error in
             print("WC send error: \(error)")
         }
+    }
+
+    // MARK: WCSessionDelegate (watchOS)
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        if let error = error { print("WC activation failed on watch: \(error)") }
+        else { print("WC activated on watch: \(activationState.rawValue)") }
     }
 }

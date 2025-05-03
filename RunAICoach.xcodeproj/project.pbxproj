@@ -25,6 +25,8 @@
 		2A91D6952DC6455400B9EC36 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6942DC6455400B9EC36 /* HealthKitManager.swift */; };
 		2A91D69A2DC64D7200B9EC36 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D6992DC64D7200B9EC36 /* HealthKit.framework */; };
 		2A91D69C2DC64D7D00B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D69B2DC64D7D00B9EC36 /* WatchConnectivity.framework */; };
+		2A91D69E2DC6554A00B9EC36 /* PhoneSesionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */; };
+		2A91D6A12DC662B600B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,6 +107,9 @@
 		2A91D6972DC64C9900B9EC36 /* RunAICoachWatch-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "RunAICoachWatch-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		2A91D6992DC64D7200B9EC36 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS10.2.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		2A91D69B2DC64D7D00B9EC36 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS10.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
+		2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSesionManager.swift; sourceTree = "<group>"; };
+		2A91D69F2DC65BC100B9EC36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +117,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A91D6A12DC662B600B9EC36 /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,10 +191,12 @@
 		2A91D6372DC5869400B9EC36 /* RunAICoach */ = {
 			isa = PBXGroup;
 			children = (
+				2A91D69F2DC65BC100B9EC36 /* Info.plist */,
 				2A91D6382DC5869400B9EC36 /* RunAICoachApp.swift */,
 				2A91D63A2DC5869400B9EC36 /* ContentView.swift */,
 				2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */,
 				2A91D63E2DC5869C00B9EC36 /* Preview Content */,
+				2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */,
 			);
 			path = RunAICoach;
 			sourceTree = "<group>";
@@ -261,6 +269,7 @@
 			isa = PBXGroup;
 			children = (
 				2A91D69B2DC64D7D00B9EC36 /* WatchConnectivity.framework */,
+				2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */,
 				2A91D6992DC64D7200B9EC36 /* HealthKit.framework */,
 			);
 			name = Frameworks;
@@ -489,6 +498,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */,
+				2A91D69E2DC6554A00B9EC36 /* PhoneSesionManager.swift in Sources */,
 				2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -699,6 +709,7 @@
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RunAICoach/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -729,6 +740,7 @@
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RunAICoach/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -837,6 +849,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RunAICoachWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = RunAICoachWatch;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Allow saving your workout data to Health";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Allow updating live workout metrics";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = nestoroprysk.RunAICoach;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -869,6 +883,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RunAICoachWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = RunAICoachWatch;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Allow saving your workout data to Health";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Allow updating live workout metrics";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = nestoroprysk.RunAICoach;
 				LD_RUNPATH_SEARCH_PATHS = (

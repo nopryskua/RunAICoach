@@ -11,7 +11,7 @@ import SwiftUI
 struct RunAICoachApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().onAppear { _ = PhoneSessionManager.shared }
         }
     }
 }
