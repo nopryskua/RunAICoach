@@ -5,13 +5,7 @@
 //  Created by Nestor Oprysk on 5/3/25.
 //
 
-// TODO: Check if all imports required
-
-import SwiftUI
-import HealthKit
-import Combine
 import WatchConnectivity
-import AVFoundation
 
 class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     func sessionDidBecomeInactive(_ session: WCSession) {
@@ -52,17 +46,5 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private func speakCurrentMetrics() {
         let text = String(format: "Current heart rate is %d bpm, distance covered is %.2f meters.", Int(heartRate), distance)
         speechManager.speak(text)
-    }
-}
-
-class SpeechManager: NSObject {
-    private let synthesizer = AVSpeechSynthesizer()
-    func speak(_ text: String) {
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        // Ensure speech is synthesized on the main thread to avoid QoS inversion warnings
-        DispatchQueue.main.async {
-            self.synthesizer.speak(utterance)
-        }
     }
 }

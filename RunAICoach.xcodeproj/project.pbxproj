@@ -27,6 +27,7 @@
 		2A91D69C2DC64D7D00B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D69B2DC64D7D00B9EC36 /* WatchConnectivity.framework */; };
 		2A91D69E2DC6554A00B9EC36 /* PhoneSesionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */; };
 		2A91D6A12DC662B600B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */; };
+		2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +111,7 @@
 		2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSesionManager.swift; sourceTree = "<group>"; };
 		2A91D69F2DC65BC100B9EC36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
+		2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +199,7 @@
 				2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */,
 				2A91D63E2DC5869C00B9EC36 /* Preview Content */,
 				2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */,
+				2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */,
 			);
 			path = RunAICoach;
 			sourceTree = "<group>";
@@ -498,6 +501,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */,
+				2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */,
 				2A91D69E2DC6554A00B9EC36 /* PhoneSesionManager.swift in Sources */,
 				2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */,
 			);
