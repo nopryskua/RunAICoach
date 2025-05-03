@@ -36,6 +36,13 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
             self.trySpeakingNext()
         }
     }
+    
+    func stopSpeaking() {
+        DispatchQueue.main.async {
+            self.synthesizer.stopSpeaking(at: .immediate)
+            self.utteranceQueue.removeAll()
+        }
+    }
 
     private func trySpeakingNext() {
         guard !synthesizer.isSpeaking, let next = utteranceQueue.first else { return }

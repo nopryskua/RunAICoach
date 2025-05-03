@@ -10,10 +10,19 @@
 		<string>location</string>
 		<string>remote-notification</string>
 		<string>voip</string>
+        <string>workout-processing</string>
 	</array>
 	<key>WKBackgroundModes</key>
 	<array>
 		<string>workout-processing</string>
 	</array>
+    <key>WKCompanionAppBundleIdentifier</key>
+    <string>com.runaicoach</string>
+    <key>WKAppBundleIdentifier</key>
+    <string>com.runaicoach.watchkitapp</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>RunAICoach needs access to your health data to track your workouts.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>RunAICoach needs permission to save your workout data.</string>
 </dict>
 </plist>

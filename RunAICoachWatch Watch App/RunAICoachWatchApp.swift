@@ -8,10 +8,13 @@
 import SwiftUI
 
 @main
-struct RunAICoachWatch_Watch_AppApp: App {
+struct RunAICoach_Watch_AppApp: App {
+    @StateObject private var healthKitManager = HealthKitManager()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(healthKitManager)
         }
     }
 }
