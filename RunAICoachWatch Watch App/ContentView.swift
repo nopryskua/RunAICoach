@@ -16,8 +16,6 @@ struct ContentView: View {
             if inWorkout {
                 Text("HR: \(Int(hk.heartRate)) bpm")
                     .font(.system(size: 20, weight: .semibold))
-                Text(String(format: "Dist: %.2f m", hk.distance))
-                    .font(.system(size: 20, weight: .semibold))
             } else {
                 Text("Ready to run?")
                     .font(.system(size: 20, weight: .semibold))

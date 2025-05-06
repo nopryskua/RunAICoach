@@ -16,5 +16,7 @@
 		<string>remote-notification</string>
 		<string>voip</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>We use your motion data to show step count and track elevation changes during workouts.</string>
 </dict>
 </plist>

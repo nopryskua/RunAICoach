@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A5C230C2DC7CE97003F4370 /* PhoneSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5C230B2DC7CE97003F4370 /* PhoneSessionManager.swift */; };
 		2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6382DC5869400B9EC36 /* RunAICoachApp.swift */; };
 		2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D63A2DC5869400B9EC36 /* ContentView.swift */; };
 		2A91D63D2DC5869C00B9EC36 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */; };
@@ -25,7 +26,6 @@
 		2A91D6952DC6455400B9EC36 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6942DC6455400B9EC36 /* HealthKitManager.swift */; };
 		2A91D69A2DC64D7200B9EC36 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D6992DC64D7200B9EC36 /* HealthKit.framework */; };
 		2A91D69C2DC64D7D00B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D69B2DC64D7D00B9EC36 /* WatchConnectivity.framework */; };
-		2A91D69E2DC6554A00B9EC36 /* PhoneSesionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */; };
 		2A91D6A12DC662B600B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */; };
 		2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */; };
 /* End PBXBuildFile section */
@@ -83,6 +83,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2A5C230B2DC7CE97003F4370 /* PhoneSessionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneSessionManager.swift; sourceTree = "<group>"; };
 		2A91D6352DC5869400B9EC36 /* RunAICoach.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RunAICoach.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A91D6382DC5869400B9EC36 /* RunAICoachApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachApp.swift; sourceTree = "<group>"; };
 		2A91D63A2DC5869400B9EC36 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -108,7 +109,6 @@
 		2A91D6972DC64C9900B9EC36 /* RunAICoachWatch-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "RunAICoachWatch-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		2A91D6992DC64D7200B9EC36 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS10.2.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		2A91D69B2DC64D7D00B9EC36 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS10.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
-		2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSesionManager.swift; sourceTree = "<group>"; };
 		2A91D69F2DC65BC100B9EC36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 		2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
@@ -193,12 +193,12 @@
 		2A91D6372DC5869400B9EC36 /* RunAICoach */ = {
 			isa = PBXGroup;
 			children = (
+				2A5C230B2DC7CE97003F4370 /* PhoneSessionManager.swift */,
 				2A91D69F2DC65BC100B9EC36 /* Info.plist */,
 				2A91D6382DC5869400B9EC36 /* RunAICoachApp.swift */,
 				2A91D63A2DC5869400B9EC36 /* ContentView.swift */,
 				2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */,
 				2A91D63E2DC5869C00B9EC36 /* Preview Content */,
-				2A91D69D2DC6554A00B9EC36 /* PhoneSesionManager.swift */,
 				2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */,
 			);
 			path = RunAICoach;
@@ -501,8 +501,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */,
+				2A5C230C2DC7CE97003F4370 /* PhoneSessionManager.swift in Sources */,
 				2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */,
-				2A91D69E2DC6554A00B9EC36 /* PhoneSesionManager.swift in Sources */,
 				2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

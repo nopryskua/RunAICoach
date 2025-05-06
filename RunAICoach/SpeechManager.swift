@@ -20,7 +20,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
     private func configureAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
-            try session.setCategory(.playback, options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers])
+            try session.setCategory(.playback, options: [.mixWithOthers, .interruptSpokenAudioAndMixWithOthers])
             try session.setMode(.spokenAudio)
             try session.setActive(true, options: [])
         } catch {

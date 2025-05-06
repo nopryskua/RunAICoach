@@ -24,5 +24,13 @@
     <string>RunAICoach needs access to your health data to track your workouts.</string>
     <key>NSHealthUpdateUsageDescription</key>
     <string>RunAICoach needs permission to save your workout data.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app uses motion data to track your activity.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>RunAICoach needs your location to track elevation during workouts.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>RunAICoach needs your location to track elevation during workouts.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>RunAICoach needs your location to track elevation during workouts.</string>
 </dict>
 </plist>
