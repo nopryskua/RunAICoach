@@ -36,7 +36,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
             self.trySpeakingNext()
         }
     }
-    
+
     func stopSpeaking() {
         DispatchQueue.main.async {
             self.synthesizer.stopSpeaking(at: .immediate)
@@ -50,7 +50,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
         synthesizer.speak(next)
     }
 
-    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+    func speechSynthesizer(_: AVSpeechSynthesizer, didFinish _: AVSpeechUtterance) {
         trySpeakingNext()
     }
 }

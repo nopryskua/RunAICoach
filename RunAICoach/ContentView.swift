@@ -9,14 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var sessionManager = PhoneSessionManager.shared
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 Text("RunAI Coach")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                
+
                 if sessionManager.isWorkoutActive {
                     VStack(spacing: 15) {
                         Group {
@@ -28,9 +28,9 @@ struct ContentView: View {
                             MetricRow(title: "Running Power", value: String(format: "%.0f", sessionManager.runningPower), unit: "W")
                             MetricRow(title: "Running Speed", value: String(format: "%.1f", sessionManager.runningSpeed), unit: "m/s")
                         }
-                        
+
                         Divider()
-                        
+
                         Group {
                             if let startTime = sessionManager.startedAt {
                                 MetricRow(title: "Started", value: startTime, unit: "", style: .time)

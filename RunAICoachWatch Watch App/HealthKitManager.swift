@@ -5,19 +5,22 @@
 //  Created by Nestor Oprysk on 5/3/25.
 //
 
-import WatchConnectivity
 import os.log
+import WatchConnectivity
 
 // MARK: - HealthKit Manager
+
 class HealthKitManager: NSObject, ObservableObject {
     // MARK: - Properties
+
     private let healthKitCollector = HealthKitMetricsCollector()
     private let pedometerManager = PedometerManager()
     private let logger = Logger(subsystem: "com.runaicoach", category: "HealthKit")
     private var metricsUpdateTimer: Timer?
     private let metricsUpdateInterval: TimeInterval = 1.0
-    
+
     // MARK: - Published Properties
+
     @Published private(set) var heartRate: Double = 0
     @Published private(set) var distance: Double = 0
     @Published private(set) var stepCount: Double = 0
@@ -26,32 +29,34 @@ class HealthKitManager: NSObject, ObservableObject {
     @Published private(set) var runningSpeed: Double = 0
     @Published private(set) var isWorkoutActive = false
     @Published private(set) var startedAt: Date?
-    
+
     // MARK: - Initialization
+
     override init() {
         super.init()
         setupWatchConnectivity()
         setupMetricsCollectors()
         requestAuthorization()
     }
-    
+
     deinit {
         stopWorkout()
         metricsUpdateTimer?.invalidate()
     }
-    
+
     // MARK: - Setup
+
     private func setupWatchConnectivity() {
         guard WCSession.isSupported() else {
             logger.error("WatchConnectivity is not supported")
             return
         }
-        
+
         let session = WCSession.default
         session.delegate = self
         session.activate()
     }
-    
+
     private func setupMetricsCollectors() {
         healthKitCollector.onMetricsUpdate = { [weak self] metrics in
             DispatchQueue.main.async {
@@ -62,25 +67,26 @@ class HealthKitManager: NSObject, ObservableObject {
                 if let speed = metrics["runningSpeed"] { self?.runningSpeed = speed }
             }
         }
-        
+
         pedometerManager.onStepCountUpdate = { [weak self] count in
             DispatchQueue.main.async {
                 self?.stepCount = count
             }
         }
     }
-    
+
     func requestAuthorization() {
         healthKitCollector.requestAuthorization()
     }
-    
+
     // MARK: - Workout Control
+
     func startWorkout() {
         guard !isWorkoutActive else {
             logger.warning("Attempted to start workout while one is already active")
             return
         }
-        
+
         if let startDate = healthKitCollector.startWorkout() {
             startedAt = startDate
             isWorkoutActive = true
@@ -88,31 +94,32 @@ class HealthKitManager: NSObject, ObservableObject {
             pedometerManager.startTracking()
         }
     }
-    
+
     func stopWorkout() {
         guard isWorkoutActive else { return }
-        
+
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.isWorkoutActive = false
             self.metricsUpdateTimer?.invalidate()
             self.metricsUpdateTimer = nil
-            
+
             self.healthKitCollector.stopWorkout()
             self.pedometerManager.stopTracking()
-            
+
             // Send final state update
             self.sendMetrics()
         }
     }
-    
+
     // MARK: - Private Methods
+
     private func startMetricsTimer() {
         metricsUpdateTimer = Timer.scheduledTimer(withTimeInterval: metricsUpdateInterval, repeats: true) { [weak self] _ in
             self?.sendMetrics()
         }
     }
-    
+
     private func sendMetrics() {
         let session = WCSession.default
 
@@ -120,7 +127,7 @@ class HealthKitManager: NSObject, ObservableObject {
             logger.error("WCSession is not reachable")
             return
         }
-        
+
         let metrics: [String: Any] = [
             "startedAt": startedAt?.timeIntervalSince1970 ?? 0,
             "timestamp": Date().timeIntervalSince1970,
@@ -130,9 +137,9 @@ class HealthKitManager: NSObject, ObservableObject {
             "stepCount": stepCount,
             "runningPower": runningPower,
             "runningSpeed": runningSpeed,
-            "isWorkoutActive": isWorkoutActive
+            "isWorkoutActive": isWorkoutActive,
         ]
-        
+
         // Try to update application context first
         do {
             try session.updateApplicationContext(metrics)
@@ -140,7 +147,7 @@ class HealthKitManager: NSObject, ObservableObject {
         } catch {
             logger.error("Failed to update application context: \(error.localizedDescription)")
         }
-        
+
         // Also send as a message for immediate delivery
         session.sendMessage(metrics, replyHandler: nil) { [weak self] error in
             self?.logger.error("Failed to send metrics: \(error.localizedDescription)")
@@ -149,8 +156,9 @@ class HealthKitManager: NSObject, ObservableObject {
 }
 
 // MARK: - WCSessionDelegate
+
 extension HealthKitManager: WCSessionDelegate {
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+    func session(_: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
             logger.error("WatchConnectivity activation failed: \(error.localizedDescription)")
         } else {

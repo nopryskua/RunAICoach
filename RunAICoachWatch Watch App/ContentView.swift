@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var hk = HealthKitManager()
     @State private var inWorkout = false
-    
+
     var body: some View {
         VStack(spacing: 8) {
             if inWorkout {
@@ -20,7 +20,7 @@ struct ContentView: View {
                 Text("Ready to run?")
                     .font(.system(size: 20, weight: .semibold))
             }
-            
+
             Button(inWorkout ? "Stop" : "Start") {
                 if inWorkout {
                     hk.stopWorkout()
@@ -33,7 +33,7 @@ struct ContentView: View {
             .tint(inWorkout ? .red : .green)
         }
         .padding()
-        .onChange(of: hk.isWorkoutActive) { oldValue, newValue in
+        .onChange(of: hk.isWorkoutActive) { _, newValue in
             inWorkout = newValue
         }
     }
