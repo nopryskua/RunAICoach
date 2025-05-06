@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct RunAICoach_Watch_AppApp: App {
+struct RunAICoachWatchApp: App {
     @StateObject private var healthKitManager = HealthKitManager()
 
     var body: some Scene {

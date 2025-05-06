@@ -60,7 +60,7 @@ class HealthKitManager: NSObject, ObservableObject {
     private func setupMetricsCollectors() {
         healthKitCollector.onMetricsUpdate = { [weak self] metrics in
             DispatchQueue.main.async {
-                if let hr = metrics["heartRate"] { self?.heartRate = hr }
+                if let heartRate = metrics["heartRate"] { self?.heartRate = heartRate }
                 if let dist = metrics["distance"] { self?.distance = dist }
                 if let energy = metrics["activeEnergy"] { self?.activeEnergy = energy }
                 if let power = metrics["runningPower"] { self?.runningPower = power }

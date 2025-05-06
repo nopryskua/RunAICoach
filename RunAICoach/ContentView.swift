@@ -20,13 +20,42 @@ struct ContentView: View {
                 if sessionManager.isWorkoutActive {
                     VStack(spacing: 15) {
                         Group {
-                            MetricRow(title: "Heart Rate", value: String(format: "%.0f", sessionManager.heartRate), unit: "BPM")
-                            MetricRow(title: "Distance", value: String(format: "%.2f", sessionManager.distance / 1000), unit: "km")
-                            MetricRow(title: "Step Count", value: String(format: "%.0f", sessionManager.stepCount), unit: "count")
-                            MetricRow(title: "Energy", value: String(format: "%.0f", sessionManager.activeEnergy), unit: "kcal", style: nil)
-                            MetricRow(title: "Elevation", value: String(format: "%.1f", sessionManager.elevation), unit: "m")
-                            MetricRow(title: "Running Power", value: String(format: "%.0f", sessionManager.runningPower), unit: "W")
-                            MetricRow(title: "Running Speed", value: String(format: "%.1f", sessionManager.runningSpeed), unit: "m/s")
+                            MetricRow(
+                                title: "Heart Rate",
+                                value: String(format: "%.0f", sessionManager.heartRate),
+                                unit: "BPM"
+                            )
+                            MetricRow(
+                                title: "Distance",
+                                value: String(format: "%.2f", sessionManager.distance / 1000),
+                                unit: "km"
+                            )
+                            MetricRow(
+                                title: "Step Count",
+                                value: String(format: "%.0f", sessionManager.stepCount),
+                                unit: "count"
+                            )
+                            MetricRow(
+                                title: "Energy",
+                                value: String(format: "%.0f", sessionManager.activeEnergy),
+                                unit: "kcal",
+                                style: nil
+                            )
+                            MetricRow(
+                                title: "Elevation",
+                                value: String(format: "%.1f", sessionManager.elevation),
+                                unit: "m"
+                            )
+                            MetricRow(
+                                title: "Running Power",
+                                value: String(format: "%.0f", sessionManager.runningPower),
+                                unit: "W"
+                            )
+                            MetricRow(
+                                title: "Running Speed",
+                                value: String(format: "%.1f", sessionManager.runningSpeed),
+                                unit: "m/s"
+                            )
                         }
 
                         Divider()

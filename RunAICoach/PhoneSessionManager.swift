@@ -106,87 +106,105 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            // Update workout state
-            if let isActive = data["isWorkoutActive"] as? Bool {
-                let wasActive = self.isWorkoutActive
-                self.isWorkoutActive = isActive
-
-                if !isActive && wasActive {
-                    // Workout just ended
-                    self.heartRate = 0
-                    self.distance = 0
-                    self.stepCount = 0
-                    self.activeEnergy = 0
-                    self.elevation = 0
-                    self.runningPower = 0
-                    self.runningSpeed = 0
-                    self.lastUpdateTime = nil
-                    self.startedAt = nil
-                    self.isSpeaking = false
-                    // Stop any ongoing speech
-                    self.speechManager.stopSpeaking()
-                    // Invalidate timer
-                    self.metricsTimer?.invalidate()
-                    self.metricsTimer = nil
-                    // Stop elevation tracking
-                    self.elevationTracker.stopTracking()
-                } else if isActive && !wasActive {
-                    // Workout just started
-                    self.setupMetricsTimer()
-                    self.elevationTracker.startTracking()
-                }
-            }
-
-            // Update metrics
-            if let hr = data["heartRate"] as? Double {
-                self.heartRate = hr
-            }
-            if let dist = data["distance"] as? Double {
-                self.distance = dist
-            }
-            if let sc = data["stepCount"] as? Double {
-                self.stepCount = sc
-            }
-            if let energy = data["activeEnergy"] as? Double {
-                self.activeEnergy = energy
-            }
-            if let rp = data["runningPower"] as? Double {
-                self.runningPower = rp
-            }
-            if let rs = data["runningSpeed"] as? Double {
-                self.runningSpeed = rs
-            }
-            if let timestamp = data["timestamp"] as? TimeInterval {
-                self.lastUpdateTime = Date(timeIntervalSince1970: timestamp)
-            }
-            if let startTime = data["startedAt"] as? TimeInterval {
-                self.startedAt = Date(timeIntervalSince1970: startTime)
-            }
+            self.handleWorkoutState(data)
+            self.updateMetrics(data)
 
             // Log received data for debugging
             self.logger.debug("Received data: \(data)")
         }
     }
 
-    // MARK: - Private Methods
+    private func handleWorkoutState(_ data: [String: Any]) {
+        guard let isActive = data["isWorkoutActive"] as? Bool else { return }
+
+        let wasActive = isWorkoutActive
+        isWorkoutActive = isActive
+
+        if !isActive && wasActive {
+            handleWorkoutEnd()
+        } else if isActive && !wasActive {
+            handleWorkoutStart()
+        }
+    }
+
+    private func handleWorkoutEnd() {
+        // Reset all metrics
+        heartRate = 0
+        distance = 0
+        stepCount = 0
+        activeEnergy = 0
+        elevation = 0
+        runningPower = 0
+        runningSpeed = 0
+        lastUpdateTime = nil
+        startedAt = nil
+        isSpeaking = false
+
+        // Stop services
+        speechManager.stopSpeaking()
+        metricsTimer?.invalidate()
+        metricsTimer = nil
+        elevationTracker.stopTracking()
+    }
+
+    private func handleWorkoutStart() {
+        setupMetricsTimer()
+        elevationTracker.startTracking()
+    }
+
+    private func updateMetrics(_ data: [String: Any]) {
+        if let heartRate = data["heartRate"] as? Double {
+            self.heartRate = heartRate
+        }
+        if let distance = data["distance"] as? Double {
+            self.distance = distance
+        }
+        if let stepCount = data["stepCount"] as? Double {
+            self.stepCount = stepCount
+        }
+        if let energy = data["activeEnergy"] as? Double {
+            activeEnergy = energy
+        }
+        if let power = data["runningPower"] as? Double {
+            runningPower = power
+        }
+        if let speed = data["runningSpeed"] as? Double {
+            runningSpeed = speed
+        }
+        if let timestamp = data["timestamp"] as? TimeInterval {
+            lastUpdateTime = Date(timeIntervalSince1970: timestamp)
+        }
+        if let startTime = data["startedAt"] as? TimeInterval {
+            startedAt = Date(timeIntervalSince1970: startTime)
+        }
+    }
 
     private func speakCurrentMetrics() {
         guard isWorkoutActive, !isSpeaking else { return }
 
         isSpeaking = true
-        let text = String(format: "Current heart rate is %d bpm, distance covered is %.2f kilometers, step count is %d steps, energy burned is %.0f calories, elevation change is %.1f meters, running power is %d W, and running speed is %d m/s.",
-                          Int(heartRate),
-                          distance / 1000,
-                          Int(stepCount),
-                          activeEnergy,
-                          elevation,
-                          Int(runningPower),
-                          Int(runningSpeed))
-        speechManager.speak(text)
+        let metricsText = formatMetricsForSpeech()
+        speechManager.speak(metricsText)
 
         // Reset speaking flag after a delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             self?.isSpeaking = false
         }
+    }
+
+    private func formatMetricsForSpeech() -> String {
+        return String(
+            format: "Current heart rate is %d bpm, distance covered is %.2f kilometers, " +
+                "step count is %d steps, energy burned is %.0f calories, " +
+                "elevation change is %.1f meters, running power is %d W, " +
+                "and running speed is %d m/s.",
+            Int(heartRate),
+            distance / 1000,
+            Int(stepCount),
+            activeEnergy,
+            elevation,
+            Int(runningPower),
+            Int(runningSpeed)
+        )
     }
 }

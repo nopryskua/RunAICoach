@@ -15,10 +15,10 @@ class BarometricElevationTracker: NSObject {
     private let logger = Logger(subsystem: "com.runaicoach", category: "BarometricElevation")
 
     // Constants for elevation calculation
-    private let R: Double = 8.31432 // J/(mol·K)
-    private let M: Double = 0.0289644 // kg/mol
-    private let g: Double = 9.80665 // m/s²
-    private let T: Double = 288.15 // K (assumed constant)
+    private let gasConstant: Double = 8.31432 // J/(mol·K)
+    private let molarMass: Double = 0.0289644 // kg/mol
+    private let gravity: Double = 9.80665 // m/s²
+    private let temperature: Double = 288.15 // K (assumed constant)
     private let factor: Double // ≈ 18406.5
 
     private var referencePressure: Double? // in kPa
@@ -27,7 +27,7 @@ class BarometricElevationTracker: NSObject {
     var onElevationUpdate: ((_ elevation: Double) -> Void)?
 
     override init() {
-        factor = (R * T) / (M * g)
+        factor = (gasConstant * temperature) / (molarMass * gravity)
         super.init()
     }
 
@@ -55,11 +55,11 @@ class BarometricElevationTracker: NSObject {
                 self.logger.info("Set reference pressure: \(pressure) kPa")
             }
 
-            let p0 = self.referencePressure!
-            let p1 = pressure
+            let initialPressure = self.referencePressure!
+            let currentPressure = pressure
 
             // Δh in meters
-            let deltaH = self.factor * log(p0 / p1)
+            let deltaH = self.factor * log(initialPressure / currentPressure)
 
             self.logger.debug("Pressure: \(pressure) kPa, Elevation change: \(deltaH)m")
             self.onElevationUpdate?(deltaH)

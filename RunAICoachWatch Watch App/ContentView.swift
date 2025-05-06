@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var hk = HealthKitManager()
+    @StateObject private var healthKitManager = HealthKitManager()
     @State private var inWorkout = false
 
     var body: some View {
         VStack(spacing: 8) {
             if inWorkout {
-                Text("HR: \(Int(hk.heartRate)) bpm")
+                Text("HR: \(Int(healthKitManager.heartRate)) bpm")
                     .font(.system(size: 20, weight: .semibold))
             } else {
                 Text("Ready to run?")
@@ -23,9 +23,9 @@ struct ContentView: View {
 
             Button(inWorkout ? "Stop" : "Start") {
                 if inWorkout {
-                    hk.stopWorkout()
+                    healthKitManager.stopWorkout()
                 } else {
-                    hk.startWorkout()
+                    healthKitManager.startWorkout()
                 }
                 inWorkout.toggle()
             }
@@ -33,7 +33,7 @@ struct ContentView: View {
             .tint(inWorkout ? .red : .green)
         }
         .padding()
-        .onChange(of: hk.isWorkoutActive) { _, newValue in
+        .onChange(of: healthKitManager.isWorkoutActive) { _, newValue in
             inWorkout = newValue
         }
     }
