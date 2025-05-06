@@ -28,6 +28,9 @@
 		2A91D69C2DC64D7D00B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D69B2DC64D7D00B9EC36 /* WatchConnectivity.framework */; };
 		2A91D6A12DC662B600B9EC36 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */; };
 		2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */; };
+		2AAA9CDA2DCABE9300F6C2AC /* BarometricElevationTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CD92DCABE9300F6C2AC /* BarometricElevationTracker.swift */; };
+		2AAA9CDC2DCAC11400F6C2AC /* HealthKitMetricsCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CDB2DCAC11300F6C2AC /* HealthKitMetricsCollector.swift */; };
+		2AAA9CDE2DCAC1B900F6C2AC /* PedometerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CDD2DCAC1B900F6C2AC /* PedometerManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +115,9 @@
 		2A91D69F2DC65BC100B9EC36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2A91D6A02DC662B600B9EC36 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 		2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
+		2AAA9CD92DCABE9300F6C2AC /* BarometricElevationTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarometricElevationTracker.swift; sourceTree = "<group>"; };
+		2AAA9CDB2DCAC11300F6C2AC /* HealthKitMetricsCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricsCollector.swift; sourceTree = "<group>"; };
+		2AAA9CDD2DCAC1B900F6C2AC /* PedometerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PedometerManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +206,7 @@
 				2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */,
 				2A91D63E2DC5869C00B9EC36 /* Preview Content */,
 				2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */,
+				2AAA9CD92DCABE9300F6C2AC /* BarometricElevationTracker.swift */,
 			);
 			path = RunAICoach;
 			sourceTree = "<group>";
@@ -239,6 +246,8 @@
 				2A91D66C2DC5884A00B9EC36 /* Assets.xcassets */,
 				2A91D66E2DC5884B00B9EC36 /* Preview Content */,
 				2A91D6942DC6455400B9EC36 /* HealthKitManager.swift */,
+				2AAA9CDB2DCAC11300F6C2AC /* HealthKitMetricsCollector.swift */,
+				2AAA9CDD2DCAC1B900F6C2AC /* PedometerManager.swift */,
 			);
 			path = "RunAICoachWatch Watch App";
 			sourceTree = "<group>";
@@ -500,6 +509,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AAA9CDA2DCABE9300F6C2AC /* BarometricElevationTracker.swift in Sources */,
 				2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */,
 				2A5C230C2DC7CE97003F4370 /* PhoneSessionManager.swift in Sources */,
 				2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */,
@@ -529,7 +539,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A91D66B2DC5884400B9EC36 /* ContentView.swift in Sources */,
+				2AAA9CDE2DCAC1B900F6C2AC /* PedometerManager.swift in Sources */,
 				2A91D6692DC5884400B9EC36 /* RunAICoachWatchApp.swift in Sources */,
+				2AAA9CDC2DCAC11400F6C2AC /* HealthKitMetricsCollector.swift in Sources */,
 				2A91D6952DC6455400B9EC36 /* HealthKitManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
