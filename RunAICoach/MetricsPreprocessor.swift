@@ -31,7 +31,7 @@ class MetricsPreprocessor {
         )
 
         timeSeries.append(point)
-        logger.debug("Added new metric point, total points: \(timeSeries.count)")
+        logger.debug("Added new metric point, total points: \(self.timeSeries.count)")
     }
 
     func getPreprocessedMetrics() -> [MetricPoint] {
