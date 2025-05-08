@@ -19,53 +19,51 @@ struct ContentView: View {
 
                 if sessionManager.isWorkoutActive {
                     VStack(spacing: 15) {
-                        Group {
-                            MetricRow(
-                                title: "Heart Rate",
-                                value: String(format: "%.0f", sessionManager.heartRate),
-                                unit: "BPM"
-                            )
-                            MetricRow(
-                                title: "Distance",
-                                value: String(format: "%.2f", sessionManager.distance / 1000),
-                                unit: "km"
-                            )
-                            MetricRow(
-                                title: "Step Count",
-                                value: String(format: "%.0f", sessionManager.stepCount),
-                                unit: "count"
-                            )
-                            MetricRow(
-                                title: "Energy",
-                                value: String(format: "%.0f", sessionManager.activeEnergy),
-                                unit: "kcal",
-                                style: nil
-                            )
-                            MetricRow(
-                                title: "Elevation",
-                                value: String(format: "%.1f", sessionManager.elevation),
-                                unit: "m"
-                            )
-                            MetricRow(
-                                title: "Running Power",
-                                value: String(format: "%.0f", sessionManager.runningPower),
-                                unit: "W"
-                            )
-                            MetricRow(
-                                title: "Running Speed",
-                                value: String(format: "%.1f", sessionManager.runningSpeed),
-                                unit: "m/s"
-                            )
-                        }
-
-                        Divider()
-
-                        Group {
-                            if let startTime = sessionManager.startedAt {
-                                MetricRow(title: "Started", value: startTime, unit: "", style: .time)
+                        if let latest = sessionManager.getLatestMetrics() {
+                            Group {
+                                MetricRow(
+                                    title: "Heart Rate",
+                                    value: String(format: "%.0f", latest.heartRate),
+                                    unit: "BPM"
+                                )
+                                MetricRow(
+                                    title: "Distance",
+                                    value: String(format: "%.2f", latest.distance / 1000),
+                                    unit: "km"
+                                )
+                                MetricRow(
+                                    title: "Step Count",
+                                    value: String(format: "%.0f", latest.stepCount),
+                                    unit: "count"
+                                )
+                                MetricRow(
+                                    title: "Energy",
+                                    value: String(format: "%.0f", latest.activeEnergy),
+                                    unit: "kcal",
+                                    style: nil
+                                )
+                                MetricRow(
+                                    title: "Elevation",
+                                    value: String(format: "%.1f", latest.elevation),
+                                    unit: "m"
+                                )
+                                MetricRow(
+                                    title: "Running Power",
+                                    value: String(format: "%.0f", latest.runningPower),
+                                    unit: "W"
+                                )
+                                MetricRow(
+                                    title: "Running Speed",
+                                    value: String(format: "%.1f", latest.runningSpeed),
+                                    unit: "m/s"
+                                )
                             }
-                            if let lastUpdate = sessionManager.lastUpdateTime {
-                                MetricRow(title: "Last Update", value: lastUpdate, unit: "", style: .time)
+
+                            Divider()
+
+                            Group {
+                                MetricRow(title: "Started", value: latest.startedAt, unit: "", style: .time)
+                                MetricRow(title: "Last Update", value: latest.timestamp, unit: "", style: .time)
                             }
                         }
                     }

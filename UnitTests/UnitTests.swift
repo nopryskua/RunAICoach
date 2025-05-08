@@ -5,20 +5,20 @@
 //  Created by Nestor Oprysk on 5/8/25.
 //
 
-import XCTest
 @testable import RunAICoach
+import XCTest
 
 final class UnitTests: XCTestCase {
     var preprocessor: MetricsPreprocessor!
-    
+
     override func setUpWithError() throws {
         preprocessor = MetricsPreprocessor()
     }
-    
+
     override func tearDownWithError() throws {
         preprocessor = nil
     }
-    
+
     func testMetricsCollection() {
         // Add three sets of metrics
         preprocessor.addMetrics(
@@ -30,7 +30,7 @@ final class UnitTests: XCTestCase {
             runningPower: 200,
             runningSpeed: 3.5
         )
-        
+
         preprocessor.addMetrics(
             heartRate: 125,
             distance: 2000,
@@ -40,7 +40,7 @@ final class UnitTests: XCTestCase {
             runningPower: 210,
             runningSpeed: 3.6
         )
-        
+
         preprocessor.addMetrics(
             heartRate: 130,
             distance: 3000,
@@ -50,13 +50,13 @@ final class UnitTests: XCTestCase {
             runningPower: 220,
             runningSpeed: 3.7
         )
-        
+
         // Get preprocessed metrics
         let processedMetrics = preprocessor.getPreprocessedMetrics()
-        
+
         // Assert that we have all three points
         XCTAssertEqual(processedMetrics.count, 3, "Should have exactly 3 metric points")
-        
+
         // Verify the values of the first point
         let firstPoint = processedMetrics[0]
         XCTAssertEqual(firstPoint.heartRate, 120)
@@ -66,7 +66,7 @@ final class UnitTests: XCTestCase {
         XCTAssertEqual(firstPoint.elevation, 10)
         XCTAssertEqual(firstPoint.runningPower, 200)
         XCTAssertEqual(firstPoint.runningSpeed, 3.5)
-        
+
         // Verify the values of the last point
         let lastPoint = processedMetrics[2]
         XCTAssertEqual(lastPoint.heartRate, 130)
@@ -77,7 +77,7 @@ final class UnitTests: XCTestCase {
         XCTAssertEqual(lastPoint.runningPower, 220)
         XCTAssertEqual(lastPoint.runningSpeed, 3.7)
     }
-    
+
     func testClearMetrics() {
         // Add some metrics
         preprocessor.addMetrics(
@@ -89,10 +89,10 @@ final class UnitTests: XCTestCase {
             runningPower: 200,
             runningSpeed: 3.5
         )
-        
+
         // Clear metrics
         preprocessor.clear()
-        
+
         // Verify metrics are cleared
         let processedMetrics = preprocessor.getPreprocessedMetrics()
         XCTAssertEqual(processedMetrics.count, 0, "Should have no metric points after clearing")

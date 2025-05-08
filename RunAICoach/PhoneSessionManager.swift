@@ -18,20 +18,12 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private let metricsUpdateInterval: TimeInterval = 120.0
     private var isSpeaking = false
     private let elevationTracker = BarometricElevationTracker()
+    private var lastElevation: Double?
     private let metricsPreprocessor = MetricsPreprocessor()
 
     // MARK: - Published Properties
 
-    @Published private(set) var heartRate: Double = 0
-    @Published private(set) var distance: Double = 0
-    @Published private(set) var stepCount: Double = 0
-    @Published private(set) var activeEnergy: Double = 0
-    @Published private(set) var elevation: Double = 0
-    @Published private(set) var runningPower: Double = 0
-    @Published private(set) var runningSpeed: Double = 0
     @Published private(set) var isWorkoutActive = false
-    @Published private(set) var lastUpdateTime: Date?
-    @Published private(set) var startedAt: Date?
 
     // MARK: - Initialization
 
@@ -70,7 +62,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private func setupElevationTracker() {
         elevationTracker.onElevationUpdate = { [weak self] elevation in
             DispatchQueue.main.async {
-                self?.elevation = elevation
+                self?.lastElevation = elevation
             }
         }
     }
@@ -129,16 +121,6 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     private func handleWorkoutEnd() {
-        // Reset all metrics
-        heartRate = 0
-        distance = 0
-        stepCount = 0
-        activeEnergy = 0
-        elevation = 0
-        runningPower = 0
-        runningSpeed = 0
-        lastUpdateTime = nil
-        startedAt = nil
         isSpeaking = false
 
         // Stop services
@@ -146,8 +128,6 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         metricsTimer?.invalidate()
         metricsTimer = nil
         elevationTracker.stopTracking()
-        
-        // Clear preprocessor data
         metricsPreprocessor.clear()
     }
 
@@ -157,43 +137,8 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     private func updateMetrics(_ data: [String: Any]) {
-        if let heartRate = data["heartRate"] as? Double {
-            self.heartRate = heartRate
-        }
-        if let distance = data["distance"] as? Double {
-            self.distance = distance
-        }
-        if let stepCount = data["stepCount"] as? Double {
-            self.stepCount = stepCount
-        }
-        if let energy = data["activeEnergy"] as? Double {
-            activeEnergy = energy
-        }
-        if let power = data["runningPower"] as? Double {
-            runningPower = power
-        }
-        if let speed = data["runningSpeed"] as? Double {
-            runningSpeed = speed
-        }
-        if let timestamp = data["timestamp"] as? TimeInterval {
-            lastUpdateTime = Date(timeIntervalSince1970: timestamp)
-        }
-        if let startTime = data["startedAt"] as? TimeInterval {
-            startedAt = Date(timeIntervalSince1970: startTime)
-        }
-        
-        // TODO: Input data with startedAt and timestamp
-
         // Add metrics to preprocessor
-        metricsPreprocessor.addMetrics(
-            heartRate: heartRate,
-            distance: distance,
-            stepCount: stepCount,
-            activeEnergy: activeEnergy,
-            elevation: elevation,
-            runningPower: runningPower,
-            runningSpeed: runningSpeed
-        )
+        metricsPreprocessor.addMetrics(data, lastElevation)
     }
 
     private func speakCurrentMetrics() {
@@ -210,18 +155,15 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     private func formatMetricsForSpeech() -> String {
+        // TODO: Call API with metrics to get text
+        let metrics = metricsPreprocessor.getPreprocessedMetrics()
         return String(
-            format: "Current heart rate is %d bpm, distance covered is %.2f kilometers, " +
-                "step count is %d steps, energy burned is %.0f calories, " +
-                "elevation change is %.1f meters, running power is %d W, " +
-                "and running speed is %d m/s.",
-            Int(heartRate),
-            distance / 1000,
-            Int(stepCount),
-            activeEnergy,
-            elevation,
-            Int(runningPower),
-            Int(runningSpeed)
+            format: "Collected %d metric points.",
+            metrics.count
         )
+    }
+
+    func getLatestMetrics() -> MetricPoint? {
+        return metricsPreprocessor.getLatestMetrics()
     }
 }
