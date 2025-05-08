@@ -34,7 +34,7 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2A91D6442DC5869D00B9EC36"
+               BlueprintIdentifier = "2AB59A882DCC2D9200979C79"
                BuildableName = "RunAICoachTests.xctest"
                BlueprintName = "RunAICoachTests"
                ReferencedContainer = "container:RunAICoach.xcodeproj">
@@ -48,6 +48,17 @@
                BlueprintIdentifier = "2A91D64E2DC5869D00B9EC36"
                BuildableName = "RunAICoachUITests.xctest"
                BlueprintName = "RunAICoachUITests"
+               ReferencedContainer = "container:RunAICoach.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2AB59A952DCC2DDA00979C79"
+               BuildableName = "TrueUnitTests.xctest"
+               BlueprintName = "TrueUnitTests"
                ReferencedContainer = "container:RunAICoach.xcodeproj">
             </BuildableReference>
          </TestableReference>

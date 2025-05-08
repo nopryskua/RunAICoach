@@ -65,6 +65,17 @@
                ReferencedContainer = "container:RunAICoach.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2AB59A952DCC2DDA00979C79"
+               BuildableName = "TrueUnitTests.xctest"
+               BlueprintName = "TrueUnitTests"
+               ReferencedContainer = "container:RunAICoach.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

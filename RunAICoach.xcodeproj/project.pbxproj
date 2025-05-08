@@ -12,16 +12,10 @@
 		2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D63A2DC5869400B9EC36 /* ContentView.swift */; };
 		2A91D63D2DC5869C00B9EC36 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */; };
 		2A91D6402DC5869C00B9EC36 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A91D63F2DC5869C00B9EC36 /* Preview Assets.xcassets */; };
-		2A91D64A2DC5869D00B9EC36 /* RunAICoachTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6492DC5869D00B9EC36 /* RunAICoachTests.swift */; };
-		2A91D6542DC5869E00B9EC36 /* RunAICoachUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6532DC5869E00B9EC36 /* RunAICoachUITests.swift */; };
-		2A91D6562DC5869E00B9EC36 /* RunAICoachUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6552DC5869E00B9EC36 /* RunAICoachUITestsLaunchTests.swift */; };
 		2A91D6692DC5884400B9EC36 /* RunAICoachWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6682DC5884400B9EC36 /* RunAICoachWatchApp.swift */; };
 		2A91D66B2DC5884400B9EC36 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D66A2DC5884400B9EC36 /* ContentView.swift */; };
 		2A91D66D2DC5884A00B9EC36 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A91D66C2DC5884A00B9EC36 /* Assets.xcassets */; };
 		2A91D6702DC5884B00B9EC36 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A91D66F2DC5884B00B9EC36 /* Preview Assets.xcassets */; };
-		2A91D67A2DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6792DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppTests.swift */; };
-		2A91D6842DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6832DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITests.swift */; };
-		2A91D6862DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6852DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITestsLaunchTests.swift */; };
 		2A91D6892DC5884B00B9EC36 /* RunAICoachWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 2A91D6662DC5884400B9EC36 /* RunAICoachWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2A91D6952DC6455400B9EC36 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6942DC6455400B9EC36 /* HealthKitManager.swift */; };
 		2A91D69A2DC64D7200B9EC36 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A91D6992DC64D7200B9EC36 /* HealthKit.framework */; };
@@ -31,43 +25,24 @@
 		2AAA9CDA2DCABE9300F6C2AC /* BarometricElevationTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CD92DCABE9300F6C2AC /* BarometricElevationTracker.swift */; };
 		2AAA9CDC2DCAC11400F6C2AC /* HealthKitMetricsCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CDB2DCAC11300F6C2AC /* HealthKitMetricsCollector.swift */; };
 		2AAA9CDE2DCAC1B900F6C2AC /* PedometerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CDD2DCAC1B900F6C2AC /* PedometerManager.swift */; };
+		2AAA9CE02DCC1B0200F6C2AC /* MetricsPreprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CDF2DCC1B0200F6C2AC /* MetricsPreprocessor.swift */; };
+		2AB59A8C2DCC2D9200979C79 /* RunAICoachTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB59A8B2DCC2D9200979C79 /* RunAICoachTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2A91D6462DC5869D00B9EC36 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2A91D62D2DC5869400B9EC36 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2A91D6342DC5869400B9EC36;
-			remoteInfo = RunAICoach;
-		};
-		2A91D6502DC5869E00B9EC36 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2A91D62D2DC5869400B9EC36 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2A91D6342DC5869400B9EC36;
-			remoteInfo = RunAICoach;
-		};
-		2A91D6762DC5884B00B9EC36 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2A91D62D2DC5869400B9EC36 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2A91D6652DC5884400B9EC36;
-			remoteInfo = "RunAICoachWatch Watch App";
-		};
-		2A91D6802DC5884B00B9EC36 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2A91D62D2DC5869400B9EC36 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2A91D6652DC5884400B9EC36;
-			remoteInfo = "RunAICoachWatch Watch App";
-		};
 		2A91D6872DC5884B00B9EC36 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A91D62D2DC5869400B9EC36 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2A91D6652DC5884400B9EC36;
 			remoteInfo = "RunAICoachWatch Watch App";
+		};
+		2AB59A8D2DCC2D9200979C79 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A91D62D2DC5869400B9EC36 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2A91D6342DC5869400B9EC36;
+			remoteInfo = RunAICoach;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -92,21 +67,11 @@
 		2A91D63A2DC5869400B9EC36 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A91D63F2DC5869C00B9EC36 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2A91D6452DC5869D00B9EC36 /* RunAICoachTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunAICoachTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A91D6492DC5869D00B9EC36 /* RunAICoachTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachTests.swift; sourceTree = "<group>"; };
-		2A91D64F2DC5869D00B9EC36 /* RunAICoachUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunAICoachUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A91D6532DC5869E00B9EC36 /* RunAICoachUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachUITests.swift; sourceTree = "<group>"; };
-		2A91D6552DC5869E00B9EC36 /* RunAICoachUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		2A91D6662DC5884400B9EC36 /* RunAICoachWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RunAICoachWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A91D6682DC5884400B9EC36 /* RunAICoachWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachWatchApp.swift; sourceTree = "<group>"; };
 		2A91D66A2DC5884400B9EC36 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2A91D66C2DC5884A00B9EC36 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A91D66F2DC5884B00B9EC36 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2A91D6752DC5884B00B9EC36 /* RunAICoachWatch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RunAICoachWatch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A91D6792DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachWatch_Watch_AppTests.swift; sourceTree = "<group>"; };
-		2A91D67F2DC5884B00B9EC36 /* RunAICoachWatch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RunAICoachWatch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A91D6832DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachWatch_Watch_AppUITests.swift; sourceTree = "<group>"; };
-		2A91D6852DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachWatch_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		2A91D6942DC6455400B9EC36 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		2A91D6962DC64BA900B9EC36 /* RunAICoachWatch Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "RunAICoachWatch Watch App.entitlements"; sourceTree = "<group>"; };
 		2A91D6972DC64C9900B9EC36 /* RunAICoachWatch-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "RunAICoachWatch-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -118,6 +83,13 @@
 		2AAA9CD92DCABE9300F6C2AC /* BarometricElevationTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarometricElevationTracker.swift; sourceTree = "<group>"; };
 		2AAA9CDB2DCAC11300F6C2AC /* HealthKitMetricsCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMetricsCollector.swift; sourceTree = "<group>"; };
 		2AAA9CDD2DCAC1B900F6C2AC /* PedometerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PedometerManager.swift; sourceTree = "<group>"; };
+		2AAA9CDF2DCC1B0200F6C2AC /* MetricsPreprocessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetricsPreprocessor.swift; sourceTree = "<group>"; };
+		2AAA9CE32DCC1CB400F6C2AC /* AGGREGATES.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = AGGREGATES.md; sourceTree = "<group>"; };
+		2AAA9CE42DCC1CB400F6C2AC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		2AAA9CE52DCC1CB400F6C2AC /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2AAA9CE92DCC1E4A00F6C2AC /* RunAICoachWatch.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RunAICoachWatch.entitlements; sourceTree = "<group>"; };
+		2AB59A892DCC2D9200979C79 /* RunAICoachTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunAICoachTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2AB59A8B2DCC2D9200979C79 /* RunAICoachTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,20 +98,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A91D6A12DC662B600B9EC36 /* WatchConnectivity.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D6422DC5869D00B9EC36 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D64C2DC5869D00B9EC36 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,14 +110,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A91D6722DC5884B00B9EC36 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D67C2DC5884B00B9EC36 /* Frameworks */ = {
+		2AB59A862DCC2D9200979C79 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -172,12 +123,12 @@
 		2A91D62C2DC5869400B9EC36 = {
 			isa = PBXGroup;
 			children = (
+				2AAA9CE32DCC1CB400F6C2AC /* AGGREGATES.md */,
+				2AAA9CE42DCC1CB400F6C2AC /* Makefile */,
+				2AAA9CE52DCC1CB400F6C2AC /* README.md */,
 				2A91D6372DC5869400B9EC36 /* RunAICoach */,
-				2A91D6482DC5869D00B9EC36 /* RunAICoachTests */,
-				2A91D6522DC5869E00B9EC36 /* RunAICoachUITests */,
 				2A91D6672DC5884400B9EC36 /* RunAICoachWatch Watch App */,
-				2A91D6782DC5884B00B9EC36 /* RunAICoachWatch Watch AppTests */,
-				2A91D6822DC5884B00B9EC36 /* RunAICoachWatch Watch AppUITests */,
+				2AB59A8A2DCC2D9200979C79 /* RunAICoachTests */,
 				2A91D6362DC5869400B9EC36 /* Products */,
 				2A91D6982DC64D7200B9EC36 /* Frameworks */,
 			);
@@ -187,11 +138,8 @@
 			isa = PBXGroup;
 			children = (
 				2A91D6352DC5869400B9EC36 /* RunAICoach.app */,
-				2A91D6452DC5869D00B9EC36 /* RunAICoachTests.xctest */,
-				2A91D64F2DC5869D00B9EC36 /* RunAICoachUITests.xctest */,
 				2A91D6662DC5884400B9EC36 /* RunAICoachWatch Watch App.app */,
-				2A91D6752DC5884B00B9EC36 /* RunAICoachWatch Watch AppTests.xctest */,
-				2A91D67F2DC5884B00B9EC36 /* RunAICoachWatch Watch AppUITests.xctest */,
+				2AB59A892DCC2D9200979C79 /* RunAICoachTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -199,6 +147,7 @@
 		2A91D6372DC5869400B9EC36 /* RunAICoach */ = {
 			isa = PBXGroup;
 			children = (
+				2AAA9CDF2DCC1B0200F6C2AC /* MetricsPreprocessor.swift */,
 				2A5C230B2DC7CE97003F4370 /* PhoneSessionManager.swift */,
 				2A91D69F2DC65BC100B9EC36 /* Info.plist */,
 				2A91D6382DC5869400B9EC36 /* RunAICoachApp.swift */,
@@ -219,26 +168,10 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		2A91D6482DC5869D00B9EC36 /* RunAICoachTests */ = {
-			isa = PBXGroup;
-			children = (
-				2A91D6492DC5869D00B9EC36 /* RunAICoachTests.swift */,
-			);
-			path = RunAICoachTests;
-			sourceTree = "<group>";
-		};
-		2A91D6522DC5869E00B9EC36 /* RunAICoachUITests */ = {
-			isa = PBXGroup;
-			children = (
-				2A91D6532DC5869E00B9EC36 /* RunAICoachUITests.swift */,
-				2A91D6552DC5869E00B9EC36 /* RunAICoachUITestsLaunchTests.swift */,
-			);
-			path = RunAICoachUITests;
-			sourceTree = "<group>";
-		};
 		2A91D6672DC5884400B9EC36 /* RunAICoachWatch Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				2AAA9CE92DCC1E4A00F6C2AC /* RunAICoachWatch.entitlements */,
 				2A91D6972DC64C9900B9EC36 /* RunAICoachWatch-Watch-App-Info.plist */,
 				2A91D6962DC64BA900B9EC36 /* RunAICoachWatch Watch App.entitlements */,
 				2A91D6682DC5884400B9EC36 /* RunAICoachWatchApp.swift */,
@@ -260,23 +193,6 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		2A91D6782DC5884B00B9EC36 /* RunAICoachWatch Watch AppTests */ = {
-			isa = PBXGroup;
-			children = (
-				2A91D6792DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppTests.swift */,
-			);
-			path = "RunAICoachWatch Watch AppTests";
-			sourceTree = "<group>";
-		};
-		2A91D6822DC5884B00B9EC36 /* RunAICoachWatch Watch AppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				2A91D6832DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITests.swift */,
-				2A91D6852DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITestsLaunchTests.swift */,
-			);
-			path = "RunAICoachWatch Watch AppUITests";
-			sourceTree = "<group>";
-		};
 		2A91D6982DC64D7200B9EC36 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -285,6 +201,14 @@
 				2A91D6992DC64D7200B9EC36 /* HealthKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2AB59A8A2DCC2D9200979C79 /* RunAICoachTests */ = {
+			isa = PBXGroup;
+			children = (
+				2AB59A8B2DCC2D9200979C79 /* RunAICoachTests.swift */,
+			);
+			path = RunAICoachTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -309,42 +233,6 @@
 			productReference = 2A91D6352DC5869400B9EC36 /* RunAICoach.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2A91D6442DC5869D00B9EC36 /* RunAICoachTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2A91D65C2DC5869E00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachTests" */;
-			buildPhases = (
-				2A91D6412DC5869D00B9EC36 /* Sources */,
-				2A91D6422DC5869D00B9EC36 /* Frameworks */,
-				2A91D6432DC5869D00B9EC36 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2A91D6472DC5869D00B9EC36 /* PBXTargetDependency */,
-			);
-			name = RunAICoachTests;
-			productName = RunAICoachTests;
-			productReference = 2A91D6452DC5869D00B9EC36 /* RunAICoachTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		2A91D64E2DC5869D00B9EC36 /* RunAICoachUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2A91D65F2DC5869E00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachUITests" */;
-			buildPhases = (
-				2A91D64B2DC5869D00B9EC36 /* Sources */,
-				2A91D64C2DC5869D00B9EC36 /* Frameworks */,
-				2A91D64D2DC5869D00B9EC36 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2A91D6512DC5869E00B9EC36 /* PBXTargetDependency */,
-			);
-			name = RunAICoachUITests;
-			productName = RunAICoachUITests;
-			productReference = 2A91D64F2DC5869D00B9EC36 /* RunAICoachUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		2A91D6652DC5884400B9EC36 /* RunAICoachWatch Watch App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2A91D68A2DC5884B00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachWatch Watch App" */;
@@ -362,41 +250,23 @@
 			productReference = 2A91D6662DC5884400B9EC36 /* RunAICoachWatch Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2A91D6742DC5884B00B9EC36 /* RunAICoachWatch Watch AppTests */ = {
+		2AB59A882DCC2D9200979C79 /* RunAICoachTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2A91D68E2DC5884B00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachWatch Watch AppTests" */;
+			buildConfigurationList = 2AB59A8F2DCC2D9200979C79 /* Build configuration list for PBXNativeTarget "RunAICoachTests" */;
 			buildPhases = (
-				2A91D6712DC5884B00B9EC36 /* Sources */,
-				2A91D6722DC5884B00B9EC36 /* Frameworks */,
-				2A91D6732DC5884B00B9EC36 /* Resources */,
+				2AB59A852DCC2D9200979C79 /* Sources */,
+				2AB59A862DCC2D9200979C79 /* Frameworks */,
+				2AB59A872DCC2D9200979C79 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2A91D6772DC5884B00B9EC36 /* PBXTargetDependency */,
+				2AB59A8E2DCC2D9200979C79 /* PBXTargetDependency */,
 			);
-			name = "RunAICoachWatch Watch AppTests";
-			productName = "RunAICoachWatch Watch AppTests";
-			productReference = 2A91D6752DC5884B00B9EC36 /* RunAICoachWatch Watch AppTests.xctest */;
+			name = RunAICoachTests;
+			productName = RunAICoachTests;
+			productReference = 2AB59A892DCC2D9200979C79 /* RunAICoachTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		2A91D67E2DC5884B00B9EC36 /* RunAICoachWatch Watch AppUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2A91D6912DC5884B00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachWatch Watch AppUITests" */;
-			buildPhases = (
-				2A91D67B2DC5884B00B9EC36 /* Sources */,
-				2A91D67C2DC5884B00B9EC36 /* Frameworks */,
-				2A91D67D2DC5884B00B9EC36 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				2A91D6812DC5884B00B9EC36 /* PBXTargetDependency */,
-			);
-			name = "RunAICoachWatch Watch AppUITests";
-			productName = "RunAICoachWatch Watch AppUITests";
-			productReference = 2A91D67F2DC5884B00B9EC36 /* RunAICoachWatch Watch AppUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -411,24 +281,12 @@
 					2A91D6342DC5869400B9EC36 = {
 						CreatedOnToolsVersion = 15.2;
 					};
-					2A91D6442DC5869D00B9EC36 = {
-						CreatedOnToolsVersion = 15.2;
-						TestTargetID = 2A91D6342DC5869400B9EC36;
-					};
-					2A91D64E2DC5869D00B9EC36 = {
-						CreatedOnToolsVersion = 15.2;
-						TestTargetID = 2A91D6342DC5869400B9EC36;
-					};
 					2A91D6652DC5884400B9EC36 = {
 						CreatedOnToolsVersion = 15.2;
 					};
-					2A91D6742DC5884B00B9EC36 = {
+					2AB59A882DCC2D9200979C79 = {
 						CreatedOnToolsVersion = 15.2;
-						TestTargetID = 2A91D6652DC5884400B9EC36;
-					};
-					2A91D67E2DC5884B00B9EC36 = {
-						CreatedOnToolsVersion = 15.2;
-						TestTargetID = 2A91D6652DC5884400B9EC36;
+						TestTargetID = 2A91D6342DC5869400B9EC36;
 					};
 				};
 			};
@@ -446,11 +304,8 @@
 			projectRoot = "";
 			targets = (
 				2A91D6342DC5869400B9EC36 /* RunAICoach */,
-				2A91D6442DC5869D00B9EC36 /* RunAICoachTests */,
-				2A91D64E2DC5869D00B9EC36 /* RunAICoachUITests */,
 				2A91D6652DC5884400B9EC36 /* RunAICoachWatch Watch App */,
-				2A91D6742DC5884B00B9EC36 /* RunAICoachWatch Watch AppTests */,
-				2A91D67E2DC5884B00B9EC36 /* RunAICoachWatch Watch AppUITests */,
+				2AB59A882DCC2D9200979C79 /* RunAICoachTests */,
 			);
 		};
 /* End PBXProject section */
@@ -465,20 +320,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A91D6432DC5869D00B9EC36 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D64D2DC5869D00B9EC36 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		2A91D6642DC5884400B9EC36 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -488,14 +329,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A91D6732DC5884B00B9EC36 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D67D2DC5884B00B9EC36 /* Resources */ = {
+		2AB59A872DCC2D9200979C79 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -511,26 +345,10 @@
 			files = (
 				2AAA9CDA2DCABE9300F6C2AC /* BarometricElevationTracker.swift in Sources */,
 				2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */,
+				2AAA9CE02DCC1B0200F6C2AC /* MetricsPreprocessor.swift in Sources */,
 				2A5C230C2DC7CE97003F4370 /* PhoneSessionManager.swift in Sources */,
 				2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */,
 				2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D6412DC5869D00B9EC36 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2A91D64A2DC5869D00B9EC36 /* RunAICoachTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D64B2DC5869D00B9EC36 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2A91D6542DC5869E00B9EC36 /* RunAICoachUITests.swift in Sources */,
-				2A91D6562DC5869E00B9EC36 /* RunAICoachUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -546,50 +364,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2A91D6712DC5884B00B9EC36 /* Sources */ = {
+		2AB59A852DCC2D9200979C79 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A91D67A2DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2A91D67B2DC5884B00B9EC36 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2A91D6842DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITests.swift in Sources */,
-				2A91D6862DC5884B00B9EC36 /* RunAICoachWatch_Watch_AppUITestsLaunchTests.swift in Sources */,
+				2AB59A8C2DCC2D9200979C79 /* RunAICoachTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2A91D6472DC5869D00B9EC36 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2A91D6342DC5869400B9EC36 /* RunAICoach */;
-			targetProxy = 2A91D6462DC5869D00B9EC36 /* PBXContainerItemProxy */;
-		};
-		2A91D6512DC5869E00B9EC36 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2A91D6342DC5869400B9EC36 /* RunAICoach */;
-			targetProxy = 2A91D6502DC5869E00B9EC36 /* PBXContainerItemProxy */;
-		};
-		2A91D6772DC5884B00B9EC36 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2A91D6652DC5884400B9EC36 /* RunAICoachWatch Watch App */;
-			targetProxy = 2A91D6762DC5884B00B9EC36 /* PBXContainerItemProxy */;
-		};
-		2A91D6812DC5884B00B9EC36 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2A91D6652DC5884400B9EC36 /* RunAICoachWatch Watch App */;
-			targetProxy = 2A91D6802DC5884B00B9EC36 /* PBXContainerItemProxy */;
-		};
 		2A91D6882DC5884B00B9EC36 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2A91D6652DC5884400B9EC36 /* RunAICoachWatch Watch App */;
 			targetProxy = 2A91D6872DC5884B00B9EC36 /* PBXContainerItemProxy */;
+		};
+		2AB59A8E2DCC2D9200979C79 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2A91D6342DC5869400B9EC36 /* RunAICoach */;
+			targetProxy = 2AB59A8D2DCC2D9200979C79 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -724,8 +518,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RunAICoach/Preview Content\"";
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTABILITY = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RunAICoach/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -738,9 +534,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoach;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -755,8 +555,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RunAICoach/Preview Content\"";
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTABILITY = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RunAICoach/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -769,85 +571,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoach;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		2A91D65D2DC5869E00B9EC36 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6TP9GTCUN9;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoachTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RunAICoach.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RunAICoach";
-			};
-			name = Debug;
-		};
-		2A91D65E2DC5869E00B9EC36 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6TP9GTCUN9;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoachTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RunAICoach.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RunAICoach";
-			};
-			name = Release;
-		};
-		2A91D6602DC5869E00B9EC36 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6TP9GTCUN9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoachUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = RunAICoach;
-			};
-			name = Debug;
-		};
-		2A91D6612DC5869E00B9EC36 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6TP9GTCUN9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoachUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = RunAICoach;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -862,6 +592,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RunAICoachWatch Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTABILITY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RunAICoachWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = RunAICoachWatch;
@@ -896,6 +627,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RunAICoachWatch Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTABILITY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RunAICoachWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = RunAICoachWatch;
@@ -919,85 +651,39 @@
 			};
 			name = Release;
 		};
-		2A91D68F2DC5884B00B9EC36 /* Debug */ = {
+		2AB59A902DCC2D9200979C79 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "nestoroprysk.RunAICoachWatch-Watch-AppTests";
+				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoachTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RunAICoachWatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RunAICoachWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RunAICoach.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RunAICoach";
 			};
 			name = Debug;
 		};
-		2A91D6902DC5884B00B9EC36 /* Release */ = {
+		2AB59A912DCC2D9200979C79 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6TP9GTCUN9;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "nestoroprysk.RunAICoachWatch-Watch-AppTests";
+				PRODUCT_BUNDLE_IDENTIFIER = nestoroprysk.RunAICoachTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RunAICoachWatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RunAICoachWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.2;
-			};
-			name = Release;
-		};
-		2A91D6922DC5884B00B9EC36 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6TP9GTCUN9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "nestoroprysk.RunAICoachWatch-Watch-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = "RunAICoachWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.2;
-			};
-			name = Debug;
-		};
-		2A91D6932DC5884B00B9EC36 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6TP9GTCUN9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "nestoroprysk.RunAICoachWatch-Watch-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				TEST_TARGET_NAME = "RunAICoachWatch Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 10.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RunAICoach.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RunAICoach";
 			};
 			name = Release;
 		};
@@ -1022,24 +708,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2A91D65C2DC5869E00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2A91D65D2DC5869E00B9EC36 /* Debug */,
-				2A91D65E2DC5869E00B9EC36 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2A91D65F2DC5869E00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2A91D6602DC5869E00B9EC36 /* Debug */,
-				2A91D6612DC5869E00B9EC36 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		2A91D68A2DC5884B00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachWatch Watch App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1049,20 +717,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2A91D68E2DC5884B00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachWatch Watch AppTests" */ = {
+		2AB59A8F2DCC2D9200979C79 /* Build configuration list for PBXNativeTarget "RunAICoachTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A91D68F2DC5884B00B9EC36 /* Debug */,
-				2A91D6902DC5884B00B9EC36 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2A91D6912DC5884B00B9EC36 /* Build configuration list for PBXNativeTarget "RunAICoachWatch Watch AppUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2A91D6922DC5884B00B9EC36 /* Debug */,
-				2A91D6932DC5884B00B9EC36 /* Release */,
+				2AB59A902DCC2D9200979C79 /* Debug */,
+				2AB59A912DCC2D9200979C79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -2,33 +2,38 @@
 //  RunAICoachTests.swift
 //  RunAICoachTests
 //
-//  Created by Nestor Oprysk on 5/3/25.
+//  Created by Nestor Oprysk on 5/8/25.
 //
 
-@testable import RunAICoach
 import XCTest
+@testable import RunAICoach
 
-final class RunAICoachTests: XCTestCase {
+final class UnitTests: XCTestCase {
+    var preprocessor: MetricsPreprocessor!
+
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        preprocessor = MetricsPreprocessor()
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        preprocessor = nil
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
+    func testMetricsCollection() {
+        preprocessor.addMetrics(
+            heartRate: 120,
+            distance: 1000,
+            stepCount: 1000,
+            activeEnergy: 100,
+            elevation: 10,
+            runningPower: 200,
+            runningSpeed: 3.5
+        )
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
-        }
+        // Get preprocessed metrics
+        let processedMetrics = preprocessor.getPreprocessedMetrics()
+
+        // Assert that we have all three points
+        XCTAssertEqual(processedMetrics.count, 1, "Should have exactly 1 metric point")
     }
 }

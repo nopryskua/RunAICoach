@@ -18,6 +18,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private let metricsUpdateInterval: TimeInterval = 120.0
     private var isSpeaking = false
     private let elevationTracker = BarometricElevationTracker()
+    private let metricsPreprocessor = MetricsPreprocessor()
 
     // MARK: - Published Properties
 
@@ -145,6 +146,9 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         metricsTimer?.invalidate()
         metricsTimer = nil
         elevationTracker.stopTracking()
+        
+        // Clear preprocessor data
+        metricsPreprocessor.clear()
     }
 
     private func handleWorkoutStart() {
@@ -177,6 +181,19 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         if let startTime = data["startedAt"] as? TimeInterval {
             startedAt = Date(timeIntervalSince1970: startTime)
         }
+        
+        // TODO: Input data with startedAt and timestamp
+
+        // Add metrics to preprocessor
+        metricsPreprocessor.addMetrics(
+            heartRate: heartRate,
+            distance: distance,
+            stepCount: stepCount,
+            activeEnergy: activeEnergy,
+            elevation: elevation,
+            runningPower: runningPower,
+            runningSpeed: runningSpeed
+        )
     }
 
     private func speakCurrentMetrics() {
