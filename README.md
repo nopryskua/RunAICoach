@@ -22,6 +22,10 @@ A comprehensive running companion app that tracks and analyzes your running metr
 | Running Power      | W         | Watch      | Instantaneous running power output             |
 | Running Speed      | m/s       | Watch      | Current running speed                          |
 
+## Aggregates
+
+For details on the aggregates refer to `AGGREGATES.md`.
+
 ## Requirements
 
 - iOS 15.0+
