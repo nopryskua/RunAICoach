@@ -155,12 +155,15 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     private func formatMetricsForSpeech() -> String {
+        let metrics = metricsPreprocessor.getAggregates()
+
         // TODO: Call API with metrics to get text
-        let metrics = metricsPreprocessor.getPreprocessedMetrics()
-        return String(
-            format: "Collected %d metric points.",
-            metrics.count
-        )
+        guard let jsonData = try? JSONEncoder().encode(metrics) else {
+            return "Failed to encode metrics"
+        }
+
+        let jsonString = String(data: jsonData, encoding: .utf8)
+        return jsonString ?? "No metrics available"
     }
 
     func getLatestMetrics() -> MetricPoint? {

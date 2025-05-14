@@ -27,6 +27,10 @@
 		2AAA9CDE2DCAC1B900F6C2AC /* PedometerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CDD2DCAC1B900F6C2AC /* PedometerManager.swift */; };
 		2AAA9CE02DCC1B0200F6C2AC /* MetricsPreprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AAA9CDF2DCC1B0200F6C2AC /* MetricsPreprocessor.swift */; };
 		2AB59A8C2DCC2D9200979C79 /* RunAICoachTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB59A8B2DCC2D9200979C79 /* RunAICoachTests.swift */; };
+		2ABD7B152DD5443800DC8C84 /* RollingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABD7B142DD5443800DC8C84 /* RollingWindow.swift */; };
+		2ABD7B182DD544F800DC8C84 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2ABD7B172DD544F800DC8C84 /* Collections */; };
+		2ABD7B1A2DD544F800DC8C84 /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 2ABD7B192DD544F800DC8C84 /* DequeModule */; };
+		2ABD7B1C2DD547B300DC8C84 /* SessionTotal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABD7B1B2DD547B300DC8C84 /* SessionTotal.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +94,8 @@
 		2AAA9CE92DCC1E4A00F6C2AC /* RunAICoachWatch.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RunAICoachWatch.entitlements; sourceTree = "<group>"; };
 		2AB59A892DCC2D9200979C79 /* RunAICoachTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunAICoachTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AB59A8B2DCC2D9200979C79 /* RunAICoachTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachTests.swift; sourceTree = "<group>"; };
+		2ABD7B142DD5443800DC8C84 /* RollingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingWindow.swift; sourceTree = "<group>"; };
+		2ABD7B1B2DD547B300DC8C84 /* SessionTotal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTotal.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,7 +103,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2ABD7B182DD544F800DC8C84 /* Collections in Frameworks */,
 				2A91D6A12DC662B600B9EC36 /* WatchConnectivity.framework in Frameworks */,
+				2ABD7B1A2DD544F800DC8C84 /* DequeModule in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,6 +164,8 @@
 				2A91D63E2DC5869C00B9EC36 /* Preview Content */,
 				2A91D6A22DC6661300B9EC36 /* SpeechManager.swift */,
 				2AAA9CD92DCABE9300F6C2AC /* BarometricElevationTracker.swift */,
+				2ABD7B142DD5443800DC8C84 /* RollingWindow.swift */,
+				2ABD7B1B2DD547B300DC8C84 /* SessionTotal.swift */,
 			);
 			path = RunAICoach;
 			sourceTree = "<group>";
@@ -229,6 +239,10 @@
 				2A91D6882DC5884B00B9EC36 /* PBXTargetDependency */,
 			);
 			name = RunAICoach;
+			packageProductDependencies = (
+				2ABD7B172DD544F800DC8C84 /* Collections */,
+				2ABD7B192DD544F800DC8C84 /* DequeModule */,
+			);
 			productName = RunAICoach;
 			productReference = 2A91D6352DC5869400B9EC36 /* RunAICoach.app */;
 			productType = "com.apple.product-type.application";
@@ -299,6 +313,9 @@
 				Base,
 			);
 			mainGroup = 2A91D62C2DC5869400B9EC36;
+			packageReferences = (
+				2ABD7B162DD544F800DC8C84 /* XCRemoteSwiftPackageReference "swift-collections" */,
+			);
 			productRefGroup = 2A91D6362DC5869400B9EC36 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -347,6 +364,8 @@
 				2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */,
 				2AAA9CE02DCC1B0200F6C2AC /* MetricsPreprocessor.swift in Sources */,
 				2A5C230C2DC7CE97003F4370 /* PhoneSessionManager.swift in Sources */,
+				2ABD7B152DD5443800DC8C84 /* RollingWindow.swift in Sources */,
+				2ABD7B1C2DD547B300DC8C84 /* SessionTotal.swift in Sources */,
 				2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */,
 				2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */,
 			);
@@ -727,6 +746,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2ABD7B162DD544F800DC8C84 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2ABD7B172DD544F800DC8C84 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2ABD7B162DD544F800DC8C84 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		2ABD7B192DD544F800DC8C84 /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2ABD7B162DD544F800DC8C84 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2A91D62D2DC5869400B9EC36 /* Project object */;
 }

@@ -13,9 +13,40 @@ struct MetricPoint {
     let startedAt: Date
 }
 
+struct Aggregates: Encodable {
+    let power30sWindowAverage: Double
+    let sessionPowerAverage: Double
+    let pace30sWindowAverage: Double
+    let pace60sWindowAverage: Double
+    let sessionPaceAverage: Double
+}
+
 class MetricsPreprocessor {
-    private var timeSeries: [MetricPoint] = []
+    private var lastPoint: MetricPoint?
     private let logger = Logger(subsystem: "com.runaicoach", category: "MetricsPreprocessor")
+
+    // Power aggregations
+    private var power30sWindow: RollingWindow
+    private var powerSessionTotal: SessionTotal
+
+    // speed aggregations
+    private var speed30sWindow: RollingWindow
+    private var speed60sWindow: RollingWindow
+    private var speedSessionTotal: SessionTotal
+
+    init() {
+        power30sWindow = RollingWindow(interval: 30) // 30 second window
+        powerSessionTotal = SessionTotal()
+
+        speed30sWindow = RollingWindow(interval: 30) // 30 second window
+        speed60sWindow = RollingWindow(interval: 60) // 60 second window
+        speedSessionTotal = SessionTotal()
+    }
+
+    private func speedToPace(_ speed: Double) -> Double { // pace in minutes per km (using speed in m/s)
+        guard speed > 0 else { return 0.0 }
+        return 1000 / speed / 60
+    }
 
     func addMetrics(_ data: [String: Any], _ lastElevation: Double?) {
         let point = MetricPoint(
@@ -30,20 +61,40 @@ class MetricsPreprocessor {
             startedAt: Date(timeIntervalSince1970: data["startedAt"] as? TimeInterval ?? 0)
         )
 
-        timeSeries.append(point)
-        logger.debug("Added new metric point, total points: \(self.timeSeries.count)")
+        lastPoint = point
+
+        // Update power aggregations
+        power30sWindow.add(value: point.runningPower, at: point.timestamp)
+        powerSessionTotal.add(point.runningPower)
+
+        // Update speed aggregations
+        speed30sWindow.add(value: point.runningSpeed, at: point.timestamp)
+        speed60sWindow.add(value: point.runningSpeed, at: point.timestamp)
+        speedSessionTotal.add(point.runningSpeed)
+
+        logger.debug("Added new metric point")
     }
 
-    func getPreprocessedMetrics() -> [MetricPoint] {
-        // TODO: Implement actual preprocessing logic
-        return timeSeries
+    func getAggregates() -> Aggregates {
+        return Aggregates(
+            power30sWindowAverage: power30sWindow.average(),
+            sessionPowerAverage: powerSessionTotal.average(),
+            pace30sWindowAverage: speedToPace(speed30sWindow.average()),
+            pace60sWindowAverage: speedToPace(speed60sWindow.average()),
+            sessionPaceAverage: speedToPace(speedSessionTotal.average())
+        )
     }
 
     func getLatestMetrics() -> MetricPoint? {
-        return timeSeries.last
+        return lastPoint
     }
 
     func clear() {
-        timeSeries.removeAll()
+        lastPoint = nil
+        power30sWindow = RollingWindow(interval: 30)
+        powerSessionTotal = SessionTotal()
+        speed30sWindow = RollingWindow(interval: 30)
+        speed60sWindow = RollingWindow(interval: 60)
+        speedSessionTotal = SessionTotal()
     }
 }
