@@ -99,6 +99,8 @@ final class UnitTests: XCTestCase {
     func testEmptySessionTotal() {
         let total = SessionTotal()
         XCTAssertEqual(total.average(), 0.0)
+        XCTAssertEqual(total.getMin(), 0.0)
+        XCTAssertEqual(total.getMax(), 0.0)
     }
 
     func testBasicSessionTotal() {
@@ -108,5 +110,7 @@ final class UnitTests: XCTestCase {
         total.add(3.0)
 
         XCTAssertEqual(total.average(), 2.0)
+        XCTAssertEqual(total.getMin(), 1.0)
+        XCTAssertEqual(total.getMax(), 3.0)
     }
 }

@@ -19,6 +19,11 @@ struct Aggregates: Encodable {
     let pace30sWindowAverage: Double
     let pace60sWindowAverage: Double
     let sessionPaceAverage: Double
+    let heartRate30sWindowAverage: Double
+    let heartRate60sWindowAverage: Double
+    let sessionHeartRateAverage: Double
+    let sessionHeartRateMin: Double
+    let sessionHeartRateMax: Double
 }
 
 class MetricsPreprocessor {
@@ -29,10 +34,15 @@ class MetricsPreprocessor {
     private var power30sWindow: RollingWindow
     private var powerSessionTotal: SessionTotal
 
-    // speed aggregations
+    // Speed aggregations
     private var speed30sWindow: RollingWindow
     private var speed60sWindow: RollingWindow
     private var speedSessionTotal: SessionTotal
+
+    // Heart rate aggregations
+    private var heartRate30sWindow: RollingWindow
+    private var heartRate60sWindow: RollingWindow
+    private var heartRateSessionTotal: SessionTotal
 
     init() {
         power30sWindow = RollingWindow(interval: 30) // 30 second window
@@ -41,6 +51,10 @@ class MetricsPreprocessor {
         speed30sWindow = RollingWindow(interval: 30) // 30 second window
         speed60sWindow = RollingWindow(interval: 60) // 60 second window
         speedSessionTotal = SessionTotal()
+
+        heartRate30sWindow = RollingWindow(interval: 30) // 30 second window
+        heartRate60sWindow = RollingWindow(interval: 60) // 60 second window
+        heartRateSessionTotal = SessionTotal()
     }
 
     private func speedToPace(_ speed: Double) -> Double { // pace in minutes per km (using speed in m/s)
@@ -72,6 +86,11 @@ class MetricsPreprocessor {
         speed60sWindow.add(value: point.runningSpeed, at: point.timestamp)
         speedSessionTotal.add(point.runningSpeed)
 
+        // Update heart rate aggregations
+        heartRate30sWindow.add(value: point.heartRate, at: point.timestamp)
+        heartRate60sWindow.add(value: point.heartRate, at: point.timestamp)
+        heartRateSessionTotal.add(point.heartRate)
+
         logger.debug("Added new metric point")
     }
 
@@ -81,7 +100,12 @@ class MetricsPreprocessor {
             sessionPowerAverage: powerSessionTotal.average(),
             pace30sWindowAverage: speedToPace(speed30sWindow.average()),
             pace60sWindowAverage: speedToPace(speed60sWindow.average()),
-            sessionPaceAverage: speedToPace(speedSessionTotal.average())
+            sessionPaceAverage: speedToPace(speedSessionTotal.average()),
+            heartRate30sWindowAverage: heartRate30sWindow.average(),
+            heartRate60sWindowAverage: heartRate60sWindow.average(),
+            sessionHeartRateAverage: heartRateSessionTotal.average(),
+            sessionHeartRateMin: heartRateSessionTotal.getMin(),
+            sessionHeartRateMax: heartRateSessionTotal.getMax()
         )
     }
 
@@ -96,5 +120,8 @@ class MetricsPreprocessor {
         speed30sWindow = RollingWindow(interval: 30)
         speed60sWindow = RollingWindow(interval: 60)
         speedSessionTotal = SessionTotal()
+        heartRate30sWindow = RollingWindow(interval: 30)
+        heartRate60sWindow = RollingWindow(interval: 60)
+        heartRateSessionTotal = SessionTotal()
     }
 }
