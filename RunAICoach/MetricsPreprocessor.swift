@@ -14,20 +14,21 @@ struct MetricPoint {
 }
 
 struct Aggregates: Encodable {
-    let power30sWindowAverage: Double
-    let sessionPowerAverage: Double
-    let pace30sWindowAverage: Double
-    let pace60sWindowAverage: Double
-    let pace60sWindowRateOfChange: Double
-    let sessionPaceAverage: Double
-    let heartRate30sWindowAverage: Double
-    let heartRate60sWindowAverage: Double
-    let heartRate60sWindowRateOfChange: Double
-    let sessionHeartRateAverage: Double
-    let sessionHeartRateMin: Double
-    let sessionHeartRateMax: Double
-    let cadence30sWindow: Double
-    let cadence60sWindow: Double
+    let distanceMeters: Double
+    let powerWatts30sWindowAverage: Double
+    let sessionPowerWattsAverage: Double
+    let paceMinutesPerKm30sWindowAverage: Double
+    let paceMinutesPerKm60sWindowAverage: Double
+    let paceMinutesPerKm60sWindowRateOfChange: Double
+    let sessionPaceMinutesPerKmAverage: Double
+    let heartRateBPM30sWindowAverage: Double
+    let heartRateBPM60sWindowAverage: Double
+    let heartRateBPM60sWindowRateOfChange: Double
+    let sessionHeartRateBPMAverage: Double
+    let sessionHeartRateBPMMin: Double
+    let sessionHeartRateBPMMax: Double
+    let cadenceSPM30sWindow: Double
+    let cadenceSPM60sWindow: Double
 }
 
 class MetricsPreprocessor {
@@ -76,7 +77,7 @@ class MetricsPreprocessor {
         stepCount60sWindow = RollingWindow(interval: 60, transform: stepCount60sDeltaTracker.delta)
     }
 
-    private func speedToPace(_ speed: Double) -> Double { // Pace in minutes per km (using speed in m/s)
+    private func speedToPaceMinutesPerKm(_ speed: Double) -> Double { // Pace in minutes per km (using speed in m/s)
         guard speed > 0 else { return 0.0 }
         return 1000 / speed / 60
     }
@@ -124,20 +125,22 @@ class MetricsPreprocessor {
 
     func getAggregates() -> Aggregates {
         return Aggregates(
-            power30sWindowAverage: power30sWindow.average(),
-            sessionPowerAverage: powerSessionTotal.average(),
-            pace30sWindowAverage: speedToPace(speed30sWindow.average()),
-            pace60sWindowAverage: speedToPace(speed60sWindow.average()),
-            pace60sWindowRateOfChange: speedToPace(speed60sWindow.average()) - speedToPace(speed60sPreviousWindow.average()),
-            sessionPaceAverage: speedToPace(speedSessionTotal.average()),
-            heartRate30sWindowAverage: heartRate30sWindow.average(),
-            heartRate60sWindowAverage: heartRate60sWindow.average(),
-            heartRate60sWindowRateOfChange: heartRate60sWindow.average() - heartRate60sPreviousWindow.average(),
-            sessionHeartRateAverage: heartRateSessionTotal.average(),
-            sessionHeartRateMin: heartRateSessionTotal.getMin(),
-            sessionHeartRateMax: heartRateSessionTotal.getMax(),
-            cadence30sWindow: cadenceSPM(stepCount: stepCount30sWindow.sum(), duration: stepCount30sWindow.duration()),
-            cadence60sWindow: cadenceSPM(stepCount: stepCount60sWindow.sum(), duration: stepCount60sWindow.duration())
+            distanceMeters: lastPoint?.distance ?? 0,
+            powerWatts30sWindowAverage: power30sWindow.average(),
+            sessionPowerWattsAverage: powerSessionTotal.average(),
+            paceMinutesPerKm30sWindowAverage: speedToPaceMinutesPerKm(speed30sWindow.average()),
+            paceMinutesPerKm60sWindowAverage: speedToPaceMinutesPerKm(speed60sWindow.average()),
+            paceMinutesPerKm60sWindowRateOfChange: speedToPaceMinutesPerKm(speed60sWindow.average()) - speedToPaceMinutesPerKm(speed60sPreviousWindow.average()),
+            sessionPaceMinutesPerKmAverage: speedToPaceMinutesPerKm(speedSessionTotal.average()),
+            heartRateBPM30sWindowAverage: heartRate30sWindow.average(),
+            heartRateBPM60sWindowAverage: heartRate60sWindow.average(),
+            heartRateBPM60sWindowRateOfChange: heartRate60sWindow.average() -
+                heartRate60sPreviousWindow.average(),
+            sessionHeartRateBPMAverage: heartRateSessionTotal.average(),
+            sessionHeartRateBPMMin: heartRateSessionTotal.getMin(),
+            sessionHeartRateBPMMax: heartRateSessionTotal.getMax(),
+            cadenceSPM30sWindow: cadenceSPM(stepCount: stepCount30sWindow.sum(), duration: stepCount30sWindow.duration()),
+            cadenceSPM60sWindow: cadenceSPM(stepCount: stepCount60sWindow.sum(), duration: stepCount60sWindow.duration())
         )
     }
 
