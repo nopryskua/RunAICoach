@@ -31,6 +31,7 @@
 		2ABD7B182DD544F800DC8C84 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2ABD7B172DD544F800DC8C84 /* Collections */; };
 		2ABD7B1A2DD544F800DC8C84 /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 2ABD7B192DD544F800DC8C84 /* DequeModule */; };
 		2ABD7B1C2DD547B300DC8C84 /* SessionTotal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABD7B1B2DD547B300DC8C84 /* SessionTotal.swift */; };
+		2ABD7B1E2DD887A500DC8C84 /* DeltaTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ABD7B1D2DD887A500DC8C84 /* DeltaTracker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 		2AB59A8B2DCC2D9200979C79 /* RunAICoachTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachTests.swift; sourceTree = "<group>"; };
 		2ABD7B142DD5443800DC8C84 /* RollingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollingWindow.swift; sourceTree = "<group>"; };
 		2ABD7B1B2DD547B300DC8C84 /* SessionTotal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTotal.swift; sourceTree = "<group>"; };
+		2ABD7B1D2DD887A500DC8C84 /* DeltaTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeltaTracker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 				2AAA9CD92DCABE9300F6C2AC /* BarometricElevationTracker.swift */,
 				2ABD7B142DD5443800DC8C84 /* RollingWindow.swift */,
 				2ABD7B1B2DD547B300DC8C84 /* SessionTotal.swift */,
+				2ABD7B1D2DD887A500DC8C84 /* DeltaTracker.swift */,
 			);
 			path = RunAICoach;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 				2ABD7B1C2DD547B300DC8C84 /* SessionTotal.swift in Sources */,
 				2A91D6A32DC6661300B9EC36 /* SpeechManager.swift in Sources */,
 				2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */,
+				2ABD7B1E2DD887A500DC8C84 /* DeltaTracker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

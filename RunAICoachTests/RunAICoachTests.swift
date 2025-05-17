@@ -9,11 +9,41 @@
 import XCTest
 
 final class UnitTests: XCTestCase {
+    // MARK: DeltaTracker Tests
+
+    func testDeltaTracker() {
+        let deltaTracker = DeltaTracker()
+        XCTAssertEqual(deltaTracker.delta(value: 2.0), 2.0)
+        XCTAssertEqual(deltaTracker.delta(value: 5.0), 3.0)
+    }
+
+    // MARK: - SessionTotal Tests
+
+    func testEmptySessionTotal() {
+        let total = SessionTotal()
+        XCTAssertEqual(total.average(), 0.0)
+        XCTAssertEqual(total.getMin(), 0.0)
+        XCTAssertEqual(total.getMax(), 0.0)
+    }
+
+    func testBasicSessionTotal() {
+        var total = SessionTotal()
+
+        total.add(1.0)
+        total.add(3.0)
+
+        XCTAssertEqual(total.average(), 2.0)
+        XCTAssertEqual(total.getMin(), 1.0)
+        XCTAssertEqual(total.getMax(), 3.0)
+    }
+
     // MARK: - RollingWindow Tests
 
     func testEmptyWindow() {
         let window = RollingWindow(interval: 10)
         XCTAssertEqual(window.average(), 0.0)
+        XCTAssertEqual(window.sum(), 0.0)
+        XCTAssertEqual(window.duration(), 0.0)
     }
 
     func testBasicAddition() {
@@ -24,7 +54,9 @@ final class UnitTests: XCTestCase {
         window.add(value: 20.0, at: now.addingTimeInterval(2))
         window.add(value: 30.0, at: now.addingTimeInterval(4))
 
+        XCTAssertEqual(window.sum(), 60.0)
         XCTAssertEqual(window.average(), 20.0)
+        XCTAssertEqual(window.duration(), 4.0)
     }
 
     func testEvictionAfterInterval() {
@@ -35,7 +67,9 @@ final class UnitTests: XCTestCase {
         window.add(value: 20.0, at: now.addingTimeInterval(2))
         window.add(value: 30.0, at: now.addingTimeInterval(6)) // Evicts 10.0
 
+        XCTAssertEqual(window.sum(), 50.0)
         XCTAssertEqual(window.average(), 25.0)
+        XCTAssertEqual(window.duration(), 4.0)
     }
 
     func testMultipleEvictions() {
@@ -106,23 +140,16 @@ final class UnitTests: XCTestCase {
         XCTAssertEqual(previous.average(), 3.0)
     }
 
-    // MARK: - SessionTotal Tests
+    func testWindowWithTransform() {
+        let deltaTracker = DeltaTracker()
+        let window = RollingWindow(interval: 10, transform: deltaTracker.delta)
+        let now = Date()
 
-    func testEmptySessionTotal() {
-        let total = SessionTotal()
-        XCTAssertEqual(total.average(), 0.0)
-        XCTAssertEqual(total.getMin(), 0.0)
-        XCTAssertEqual(total.getMax(), 0.0)
-    }
+        window.add(value: 1.0, at: now)
+        window.add(value: 2.0, at: now.addingTimeInterval(1))
+        window.add(value: 3.0, at: now.addingTimeInterval(1)) // Mimics accumulated delta
 
-    func testBasicSessionTotal() {
-        var total = SessionTotal()
-
-        total.add(1.0)
-        total.add(3.0)
-
-        XCTAssertEqual(total.average(), 2.0)
-        XCTAssertEqual(total.getMin(), 1.0)
-        XCTAssertEqual(total.getMax(), 3.0)
+        XCTAssertEqual(window.sum(), 3.0)
+        XCTAssertEqual(window.average(), 1.0)
     }
 }
