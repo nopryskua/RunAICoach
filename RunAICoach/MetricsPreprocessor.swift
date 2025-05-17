@@ -18,9 +18,11 @@ struct Aggregates: Encodable {
     let sessionPowerAverage: Double
     let pace30sWindowAverage: Double
     let pace60sWindowAverage: Double
+    let pace60sWindowRateOfChange: Double
     let sessionPaceAverage: Double
     let heartRate30sWindowAverage: Double
     let heartRate60sWindowAverage: Double
+    let heartRate60sWindowRateOfChange: Double
     let sessionHeartRateAverage: Double
     let sessionHeartRateMin: Double
     let sessionHeartRateMax: Double
@@ -36,24 +38,28 @@ class MetricsPreprocessor {
 
     // Speed aggregations
     private var speed30sWindow: RollingWindow
+    private var speed60sPreviousWindow: RollingWindow
     private var speed60sWindow: RollingWindow
     private var speedSessionTotal: SessionTotal
 
     // Heart rate aggregations
     private var heartRate30sWindow: RollingWindow
+    private var heartRate60sPreviousWindow: RollingWindow
     private var heartRate60sWindow: RollingWindow
     private var heartRateSessionTotal: SessionTotal
 
     init() {
-        power30sWindow = RollingWindow(interval: 30) // 30 second window
+        power30sWindow = RollingWindow(interval: 30)
         powerSessionTotal = SessionTotal()
 
-        speed30sWindow = RollingWindow(interval: 30) // 30 second window
-        speed60sWindow = RollingWindow(interval: 60) // 60 second window
+        speed30sWindow = RollingWindow(interval: 30)
+        speed60sPreviousWindow = RollingWindow(interval: 60)
+        speed60sWindow = RollingWindow(interval: 60, previous: speed60sPreviousWindow)
         speedSessionTotal = SessionTotal()
 
-        heartRate30sWindow = RollingWindow(interval: 30) // 30 second window
-        heartRate60sWindow = RollingWindow(interval: 60) // 60 second window
+        heartRate30sWindow = RollingWindow(interval: 30)
+        heartRate60sPreviousWindow = RollingWindow(interval: 60)
+        heartRate60sWindow = RollingWindow(interval: 60, previous: heartRate60sPreviousWindow)
         heartRateSessionTotal = SessionTotal()
     }
 
@@ -100,9 +106,11 @@ class MetricsPreprocessor {
             sessionPowerAverage: powerSessionTotal.average(),
             pace30sWindowAverage: speedToPace(speed30sWindow.average()),
             pace60sWindowAverage: speedToPace(speed60sWindow.average()),
+            pace60sWindowRateOfChange: speedToPace(speed60sWindow.average()) - speedToPace(speed60sPreviousWindow.average()),
             sessionPaceAverage: speedToPace(speedSessionTotal.average()),
             heartRate30sWindowAverage: heartRate30sWindow.average(),
             heartRate60sWindowAverage: heartRate60sWindow.average(),
+            heartRate60sWindowRateOfChange: heartRate60sWindow.average() - heartRate60sPreviousWindow.average(),
             sessionHeartRateAverage: heartRateSessionTotal.average(),
             sessionHeartRateMin: heartRateSessionTotal.getMin(),
             sessionHeartRateMax: heartRateSessionTotal.getMax()
@@ -115,13 +123,18 @@ class MetricsPreprocessor {
 
     func clear() {
         lastPoint = nil
+
         power30sWindow = RollingWindow(interval: 30)
         powerSessionTotal = SessionTotal()
+
         speed30sWindow = RollingWindow(interval: 30)
-        speed60sWindow = RollingWindow(interval: 60)
+        speed60sPreviousWindow = RollingWindow(interval: 60)
+        speed60sWindow = RollingWindow(interval: 60, previous: speed60sPreviousWindow)
         speedSessionTotal = SessionTotal()
+
         heartRate30sWindow = RollingWindow(interval: 30)
-        heartRate60sWindow = RollingWindow(interval: 60)
+        heartRate60sPreviousWindow = RollingWindow(interval: 60)
+        heartRate60sWindow = RollingWindow(interval: 60, previous: heartRate60sPreviousWindow)
         heartRateSessionTotal = SessionTotal()
     }
 }
