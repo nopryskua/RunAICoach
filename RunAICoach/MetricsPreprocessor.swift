@@ -14,6 +14,7 @@ struct MetricPoint {
 }
 
 struct Aggregates: Encodable {
+    let sessionDuration: TimeInterval
     let powerWatts30sWindowAverage: Double
     let sessionPowerWattsAverage: Double
     let paceMinutesPerKm30sWindowAverage: Double
@@ -85,6 +86,10 @@ class MetricsPreprocessor {
         distance60sWindow = RollingWindow(interval: 60, transform: distance60sDeltaTracker.delta)
     }
 
+    private func sessionDuration(timestamp: Date, startedAt: Date) -> TimeInterval {
+        return timestamp.timeIntervalSince(startedAt)
+    }
+
     private func speedToPaceMinutesPerKm(_ speed: Double) -> Double { // Pace in minutes per km using speed in m/s
         guard speed > 0 else { return 0.0 }
         return 1000 / speed / 60
@@ -141,6 +146,8 @@ class MetricsPreprocessor {
 
     func getAggregates() -> Aggregates {
         return Aggregates(
+            sessionDuration: sessionDuration(timestamp: lastPoint?.timestamp ?? Date.distantPast,
+                                             startedAt: lastPoint?.startedAt ?? Date.distantPast),
             powerWatts30sWindowAverage: power30sWindow.average(),
             sessionPowerWattsAverage: powerSessionTotal.average(),
             paceMinutesPerKm30sWindowAverage: speedToPaceMinutesPerKm(speed30sWindow.average()),
