@@ -14,7 +14,6 @@ struct MetricPoint {
 }
 
 struct Aggregates: Encodable {
-    let distanceMeters: Double
     let powerWatts30sWindowAverage: Double
     let sessionPowerWattsAverage: Double
     let paceMinutesPerKm30sWindowAverage: Double
@@ -29,6 +28,8 @@ struct Aggregates: Encodable {
     let sessionHeartRateBPMMax: Double
     let cadenceSPM30sWindow: Double
     let cadenceSPM60sWindow: Double
+    let distanceMeters: Double
+    let strideLengthMPS: Double
 }
 
 class MetricsPreprocessor {
@@ -57,6 +58,10 @@ class MetricsPreprocessor {
     private var stepCount60sDeltaTracker: DeltaTracker
     private var stepCount60sWindow: RollingWindow
 
+    // Distance aggregations
+    private var distance60sDeltaTracker: DeltaTracker
+    private var distance60sWindow: RollingWindow
+
     init() {
         power30sWindow = RollingWindow(interval: 30)
         powerSessionTotal = SessionTotal()
@@ -75,9 +80,12 @@ class MetricsPreprocessor {
         stepCount30sWindow = RollingWindow(interval: 30, transform: stepCount30sDeltaTracker.delta)
         stepCount60sDeltaTracker = DeltaTracker()
         stepCount60sWindow = RollingWindow(interval: 60, transform: stepCount60sDeltaTracker.delta)
+
+        distance60sDeltaTracker = DeltaTracker()
+        distance60sWindow = RollingWindow(interval: 60, transform: distance60sDeltaTracker.delta)
     }
 
-    private func speedToPaceMinutesPerKm(_ speed: Double) -> Double { // Pace in minutes per km (using speed in m/s)
+    private func speedToPaceMinutesPerKm(_ speed: Double) -> Double { // Pace in minutes per km using speed in m/s
         guard speed > 0 else { return 0.0 }
         return 1000 / speed / 60
     }
@@ -85,6 +93,11 @@ class MetricsPreprocessor {
     private func cadenceSPM(stepCount: Double, duration: TimeInterval) -> Double {
         guard duration > 0 else { return 0.0 }
         return stepCount * 60 / duration
+    }
+
+    private func strideLengthMPS(distance: Double, stepCount: Double) -> Double {
+        guard stepCount > 0 else { return 0.0 }
+        return distance / stepCount
     }
 
     func addMetrics(_ data: [String: Any], _ lastElevation: Double?) {
@@ -120,12 +133,14 @@ class MetricsPreprocessor {
         stepCount30sWindow.add(value: point.stepCount, at: point.timestamp)
         stepCount60sWindow.add(value: point.stepCount, at: point.timestamp)
 
+        // Update distance aggregations
+        distance60sWindow.add(value: point.distance, at: point.timestamp)
+
         logger.debug("Added new metric point")
     }
 
     func getAggregates() -> Aggregates {
         return Aggregates(
-            distanceMeters: lastPoint?.distance ?? 0,
             powerWatts30sWindowAverage: power30sWindow.average(),
             sessionPowerWattsAverage: powerSessionTotal.average(),
             paceMinutesPerKm30sWindowAverage: speedToPaceMinutesPerKm(speed30sWindow.average()),
@@ -140,7 +155,9 @@ class MetricsPreprocessor {
             sessionHeartRateBPMMin: heartRateSessionTotal.getMin(),
             sessionHeartRateBPMMax: heartRateSessionTotal.getMax(),
             cadenceSPM30sWindow: cadenceSPM(stepCount: stepCount30sWindow.sum(), duration: stepCount30sWindow.duration()),
-            cadenceSPM60sWindow: cadenceSPM(stepCount: stepCount60sWindow.sum(), duration: stepCount60sWindow.duration())
+            cadenceSPM60sWindow: cadenceSPM(stepCount: stepCount60sWindow.sum(), duration: stepCount60sWindow.duration()),
+            distanceMeters: lastPoint?.distance ?? 0,
+            strideLengthMPS: strideLengthMPS(distance: distance60sWindow.sum(), stepCount: stepCount60sWindow.sum())
         )
     }
 
@@ -168,5 +185,8 @@ class MetricsPreprocessor {
         stepCount30sWindow = RollingWindow(interval: 30, transform: stepCount30sDeltaTracker.delta)
         stepCount60sDeltaTracker = DeltaTracker()
         stepCount60sWindow = RollingWindow(interval: 60, transform: stepCount60sDeltaTracker.delta)
+
+        distance60sDeltaTracker = DeltaTracker()
+        distance60sWindow = RollingWindow(interval: 60, transform: distance60sDeltaTracker.delta)
     }
 }
