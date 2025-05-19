@@ -14,7 +14,7 @@ final class DeltaTracker {
         previousValue = 0.0
     }
 
-    func delta(value: Double) -> Double {
+    func delta(_ value: Double) -> Double {
         defer { previousValue = value }
 
         return value - previousValue

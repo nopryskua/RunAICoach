@@ -13,8 +13,8 @@ final class UnitTests: XCTestCase {
 
     func testDeltaTracker() {
         let deltaTracker = DeltaTracker()
-        XCTAssertEqual(deltaTracker.delta(value: 2.0), 2.0)
-        XCTAssertEqual(deltaTracker.delta(value: 5.0), 3.0)
+        XCTAssertEqual(deltaTracker.delta(2.0), 2.0)
+        XCTAssertEqual(deltaTracker.delta(5.0), 3.0)
     }
 
     // MARK: - SessionTotal Tests

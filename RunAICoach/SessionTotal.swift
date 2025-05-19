@@ -52,7 +52,7 @@ struct SessionTotal {
 
     func average() -> Double {
         guard count > 0 else { return 0 }
-        return Double(total) / Double(count)
+        return total / Double(count)
     }
 
     func getMin() -> Double {
