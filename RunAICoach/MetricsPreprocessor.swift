@@ -34,6 +34,7 @@ struct Aggregates: Encodable {
     let sessionElevationGainMeters: Double
     let elevationGainMeters30sWindow: Double
     let gradePercentage10sWindow: Double
+    let gradeAdjustedPace60sWindow: Double
 }
 
 class MetricsPreprocessor {
@@ -77,6 +78,7 @@ class MetricsPreprocessor {
     private var elevationGain10sWindow: RollingWindow
     private var distance10sDeltaTracker: DeltaTracker
     private var distance10sWindow: RollingWindow
+    private var gap60sWindow: RollingWindow
 
     init() {
         power30sWindow = RollingWindow(interval: 30)
@@ -110,6 +112,7 @@ class MetricsPreprocessor {
         elevationGain10sWindow = RollingWindow(interval: 10, transform: elevationGain10sDeltaTracker.delta)
         distance10sDeltaTracker = DeltaTracker()
         distance10sWindow = RollingWindow(interval: 10, transform: distance10sDeltaTracker.delta)
+        gap60sWindow = RollingWindow(interval: 60)
     }
 
     private func sessionDuration(timestamp: Date, startedAt: Date) -> TimeInterval {
@@ -134,6 +137,25 @@ class MetricsPreprocessor {
     private func calculateGradePercentage(elevationChange: Double, horizontalDistance: Double) -> Double {
         guard horizontalDistance > 0 else { return 0.0 }
         return (elevationChange / horizontalDistance) * 100.0
+    }
+
+    private func calculateGradeAdjustmentFactor(grade: Double) -> Double {
+        // Strava's empirically derived adjustment factors
+        // For uphill (positive grade)
+        if grade > 0 {
+            return 1.0 + (0.03 * grade) + (0.0005 * grade * grade)
+        }
+        // For downhill (negative grade)
+        else if grade < 0 {
+            return 1.0 + (0.02 * grade) + (0.0003 * grade * grade)
+        }
+        // Flat terrain
+        return 1.0
+    }
+
+    private func calculateGAP(pace: Double, grade: Double) -> Double {
+        let adjustmentFactor = calculateGradeAdjustmentFactor(grade: grade)
+        return pace * adjustmentFactor
     }
 
     func addMetrics(_ data: [String: Any], _ lastElevation: Double?) {
@@ -178,6 +200,13 @@ class MetricsPreprocessor {
         elevationGainSessionTotal30sWindow.add(value: elevationGainSessionTotal, at: point.timestamp)
         elevationGain10sWindow.add(value: point.elevation, at: point.timestamp)
         distance10sWindow.add(value: point.distance, at: point.timestamp)
+        let currentPace = speedToPaceMinutesPerKm(speed60sWindow.average())
+        let currentGrade = calculateGradePercentage(
+            elevationChange: elevationGain10sWindow.sum(),
+            horizontalDistance: distance10sWindow.sum()
+        )
+        let gap = calculateGAP(pace: currentPace, grade: currentGrade)
+        gap60sWindow.add(value: gap, at: point.timestamp)
 
         logger.debug("Added new metric point")
     }
@@ -209,7 +238,8 @@ class MetricsPreprocessor {
             gradePercentage10sWindow: calculateGradePercentage(
                 elevationChange: elevationGain10sWindow.sum(),
                 horizontalDistance: distance10sWindow.sum()
-            )
+            ),
+            gradeAdjustedPace60sWindow: gap60sWindow.average()
         )
     }
 
@@ -250,5 +280,6 @@ class MetricsPreprocessor {
         elevationGain10sWindow = RollingWindow(interval: 10, transform: elevationGain10sDeltaTracker.delta)
         distance10sDeltaTracker = DeltaTracker()
         distance10sWindow = RollingWindow(interval: 10, transform: distance10sDeltaTracker.delta)
+        gap60sWindow = RollingWindow(interval: 60)
     }
 }
