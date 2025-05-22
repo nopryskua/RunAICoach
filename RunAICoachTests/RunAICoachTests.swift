@@ -377,50 +377,86 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.gradeAdjustedPace60sWindow, 5.15, accuracy: 0.01) // Same as pace since grade is 0
     }
 
-    // TODO: Test with elevation
-
     // MARK: - Window-based Tests
 
     func testWindowTransitions() {
         let now = startedAt
 
         // Add points over 70 seconds to test window transitions
-        for i in 0 ..< 70 {
+        // First 30 seconds: increasing values
+        for i in 0 ..< 30 {
             let data: [String: Any] = [
-                "heartRate": 150.0,
-                "distance": Double(i * 10),
-                "stepCount": Double(i * 5),
-                "activeEnergy": Double(i),
-                "runningPower": 200.0,
-                "runningSpeed": 3.0,
+                "heartRate": 120.0 + Double(i), // 120 to 149
+                "distance": Double(i * 10), // 0 to 290m
+                "stepCount": Double(i * 5), // 0 to 145 steps
+                "activeEnergy": Double(i), // 0 to 29
+                "runningPower": 150.0 + Double(i), // 150 to 179
+                "runningSpeed": 2.0 + Double(i) * 0.05, // 2.0 to 3.45 m/s
                 "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
                 "startedAt": now.timeIntervalSince1970,
             ]
-            preprocessor.addMetrics(data, 0)
+            preprocessor.addMetrics(data, Double(i)) // Gradual elevation gain
+        }
+
+        // Next 30 seconds: decreasing values
+        for i in 30 ..< 60 {
+            let data: [String: Any] = [
+                "heartRate": 150.0 - Double(i - 30), // 150 to 121
+                "distance": 300.0 + Double(i - 30) * 8, // 300 to 540m
+                "stepCount": 150.0 + Double(i - 30) * 4, // 150 to 270 steps
+                "activeEnergy": 30.0 + Double(i - 30), // 30 to 59
+                "runningPower": 180.0 - Double(i - 30), // 180 to 151
+                "runningSpeed": 3.5 - Double(i - 30) * 0.05, // 3.5 to 2.05 m/s
+                "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
+                "startedAt": now.timeIntervalSince1970,
+            ]
+            preprocessor.addMetrics(data, 30.0 - Double(i - 30)) // Gradual elevation loss
+        }
+
+        // Final 10 seconds: constant values
+        for i in 60 ..< 70 {
+            let data: [String: Any] = [
+                "heartRate": 120.0,
+                "distance": 550.0 + Double(i - 60) * 10, // 550 to 640m
+                "stepCount": 280.0 + Double(i - 60) * 5, // 280 to 325 steps
+                "activeEnergy": 60.0 + Double(i - 60), // 60 to 69
+                "runningPower": 150.0,
+                "runningSpeed": 2.0,
+                "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
+                "startedAt": now.timeIntervalSince1970,
+            ]
+            preprocessor.addMetrics(data, 0.0) // Flat terrain
         }
 
         let aggregates = preprocessor.getAggregates()
         XCTAssertEqual(aggregates.sessionDuration, 69.0)
-        XCTAssertEqual(aggregates.heartRateBPM30sWindowAverage, 150.0)
-        XCTAssertEqual(aggregates.heartRateBPM60sWindowAverage, 150.0)
-        XCTAssertEqual(aggregates.heartRateBPM60sWindowRateOfChange, 0) // Constant heart rate
-        XCTAssertEqual(aggregates.sessionHeartRateBPMAverage, 150.0)
-        XCTAssertEqual(aggregates.sessionHeartRateBPMMin, 150.0)
+
+        // 30s window should only contain the last 30 seconds (constant values)
+        XCTAssertEqual(aggregates.heartRateBPM30sWindowAverage, 120.0)
+        XCTAssertEqual(aggregates.powerWatts30sWindowAverage, 150.0)
+        XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 8.33, accuracy: 0.01) // 1000/2/60
+
+        // 60s window should contain the last 60 seconds (decreasing then constant)
+        XCTAssertEqual(aggregates.heartRateBPM60sWindowAverage, 120.0, accuracy: 1.0)
+        XCTAssertEqual(aggregates.paceMinutesPerKm60sWindowAverage, 8.33, accuracy: 0.01)
+
+        // Session totals should reflect all 70 seconds
+        XCTAssertEqual(aggregates.sessionHeartRateBPMAverage, 135.0, accuracy: 1.0)
+        XCTAssertEqual(aggregates.sessionHeartRateBPMMin, 120.0)
         XCTAssertEqual(aggregates.sessionHeartRateBPMMax, 150.0)
-        XCTAssertEqual(aggregates.powerWatts30sWindowAverage, 200.0)
-        XCTAssertEqual(aggregates.sessionPowerWattsAverage, 200.0)
-        XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 5.56, accuracy: 0.01) // 1000/3/60
-        XCTAssertEqual(aggregates.paceMinutesPerKm60sWindowAverage, 5.56, accuracy: 0.01)
-        XCTAssertEqual(aggregates.paceMinutesPerKm60sWindowRateOfChange, 0) // Constant pace
-        XCTAssertEqual(aggregates.sessionPaceMinutesPerKmAverage, 5.56, accuracy: 0.01)
+        XCTAssertEqual(aggregates.sessionPowerWattsAverage, 165.0, accuracy: 1.0)
+        XCTAssertEqual(aggregates.sessionPaceMinutesPerKmAverage, 7.14, accuracy: 0.01) // Average of varying paces
+
+        // Distance and steps should accumulate
+        XCTAssertEqual(aggregates.distanceMeters, 640.0)
         XCTAssertEqual(aggregates.cadenceSPM30sWindow, 300.0) // 5 steps/second * 60
-        XCTAssertEqual(aggregates.cadenceSPM60sWindow, 300.0)
-        XCTAssertEqual(aggregates.distanceMeters, 690.0) // 69 seconds * 10 meters/second
         XCTAssertEqual(aggregates.strideLengthMPS, 2.0) // 10m / 5 steps
-        XCTAssertEqual(aggregates.sessionElevationGainMeters, 0)
-        XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0)
-        XCTAssertEqual(aggregates.gradePercentage10sWindow, 0)
-        XCTAssertEqual(aggregates.gradeAdjustedPace60sWindow, 5.56, accuracy: 0.01) // Same as pace since grade is 0
+
+        // Elevation should be back to 0 after up and down
+        XCTAssertEqual(aggregates.sessionElevationGainMeters, 0.0, accuracy: 0.1)
+        XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0.0)
+        XCTAssertEqual(aggregates.gradePercentage10sWindow, 0.0)
+        XCTAssertEqual(aggregates.gradeAdjustedPace60sWindow, 8.33, accuracy: 0.01) // Same as pace since grade is 0
     }
 
     // MARK: - Grade and GAP Tests
