@@ -37,6 +37,58 @@ struct Aggregates: Encodable {
     let gradeAdjustedPace60sWindow: Double
 }
 
+// MARK: - Utility Functions
+
+private func sessionDuration(timestamp: Date, startedAt: Date) -> TimeInterval {
+    return timestamp.timeIntervalSince(startedAt)
+}
+
+private func speedToPaceMinutesPerKm(_ speed: Double) -> Double { // Pace in minutes per km using speed in m/s
+    guard speed > 0 else { return 0.0 }
+    return 1000 / speed / 60
+}
+
+private func cadenceSPM(stepCount: Double, duration: TimeInterval) -> Double {
+    guard duration > 0 else { return 0.0 }
+    return stepCount * 60 / duration
+}
+
+private func strideLengthMPS(distance: Double, stepCount: Double) -> Double {
+    guard stepCount > 0 else { return 0.0 }
+    return distance / stepCount
+}
+
+private func calculateGradePercentage(elevationChange: Double, horizontalDistance: Double) -> Double {
+    guard horizontalDistance > 0 else { return 0.0 }
+    return (elevationChange / horizontalDistance) * 100.0
+}
+
+private func calculateGradeAdjustmentFactor(grade: Double) -> Double {
+    // Strava's empirically derived adjustment factors
+    // For uphill (positive grade)
+    if grade > 0 {
+        return 1.0 + (0.03 * grade) + (0.0005 * grade * grade)
+    }
+    // For downhill (negative grade)
+    else if grade < 0 {
+        return 1.0 + (0.02 * grade) + (0.0003 * grade * grade)
+    }
+    // Flat terrain
+    return 1.0
+}
+
+private func calculateGAP(pace: Double, grade: Double) -> Double {
+    let adjustmentFactor = calculateGradeAdjustmentFactor(grade: grade)
+    return pace * adjustmentFactor
+}
+
+private func calculateRateOfChange(current: Double, previous: Double) -> Double {
+    guard previous > 0 else { return 0.0 }
+    return current - previous
+}
+
+// MARK: - MetricsPreprocessor
+
 class MetricsPreprocessor {
     private var lastPoint: MetricPoint?
     private let logger = Logger(subsystem: "com.runaicoach", category: "MetricsPreprocessor")
@@ -45,11 +97,11 @@ class MetricsPreprocessor {
     private var power30sWindow: RollingWindow
     private var powerSessionTotal: SessionTotal
 
-    // Speed aggregations
-    private var speed30sWindow: RollingWindow
-    private var speed60sPreviousWindow: RollingWindow
-    private var speed60sWindow: RollingWindow
-    private var speedSessionTotal: SessionTotal
+    // Pace aggregations (replacing speed windows)
+    private var pace30sWindow: RollingWindow
+    private var pace60sPreviousWindow: RollingWindow
+    private var pace60sWindow: RollingWindow
+    private var paceSessionTotal: SessionTotal
 
     // Heart rate aggregations
     private var heartRate30sWindow: RollingWindow
@@ -84,10 +136,11 @@ class MetricsPreprocessor {
         power30sWindow = RollingWindow(interval: 30)
         powerSessionTotal = SessionTotal()
 
-        speed30sWindow = RollingWindow(interval: 30)
-        speed60sPreviousWindow = RollingWindow(interval: 60)
-        speed60sWindow = RollingWindow(interval: 60, previous: speed60sPreviousWindow)
-        speedSessionTotal = SessionTotal()
+        // Initialize pace windows with speedToPaceMinutesPerKm transform
+        pace30sWindow = RollingWindow(interval: 30, transform: speedToPaceMinutesPerKm)
+        pace60sPreviousWindow = RollingWindow(interval: 60, transform: speedToPaceMinutesPerKm)
+        pace60sWindow = RollingWindow(interval: 60, previous: pace60sPreviousWindow, transform: speedToPaceMinutesPerKm)
+        paceSessionTotal = SessionTotal(transform: speedToPaceMinutesPerKm)
 
         heartRate30sWindow = RollingWindow(interval: 30)
         heartRate60sPreviousWindow = RollingWindow(interval: 60)
@@ -115,54 +168,6 @@ class MetricsPreprocessor {
         gap60sWindow = RollingWindow(interval: 60)
     }
 
-    private func sessionDuration(timestamp: Date, startedAt: Date) -> TimeInterval {
-        return timestamp.timeIntervalSince(startedAt)
-    }
-
-    private func speedToPaceMinutesPerKm(_ speed: Double) -> Double { // Pace in minutes per km using speed in m/s
-        guard speed > 0 else { return 0.0 }
-        return 1000 / speed / 60
-    }
-
-    private func cadenceSPM(stepCount: Double, duration: TimeInterval) -> Double {
-        guard duration > 0 else { return 0.0 }
-        return stepCount * 60 / duration
-    }
-
-    private func strideLengthMPS(distance: Double, stepCount: Double) -> Double {
-        guard stepCount > 0 else { return 0.0 }
-        return distance / stepCount
-    }
-
-    private func calculateGradePercentage(elevationChange: Double, horizontalDistance: Double) -> Double {
-        guard horizontalDistance > 0 else { return 0.0 }
-        return (elevationChange / horizontalDistance) * 100.0
-    }
-
-    private func calculateGradeAdjustmentFactor(grade: Double) -> Double {
-        // Strava's empirically derived adjustment factors
-        // For uphill (positive grade)
-        if grade > 0 {
-            return 1.0 + (0.03 * grade) + (0.0005 * grade * grade)
-        }
-        // For downhill (negative grade)
-        else if grade < 0 {
-            return 1.0 + (0.02 * grade) + (0.0003 * grade * grade)
-        }
-        // Flat terrain
-        return 1.0
-    }
-
-    private func calculateGAP(pace: Double, grade: Double) -> Double {
-        let adjustmentFactor = calculateGradeAdjustmentFactor(grade: grade)
-        return pace * adjustmentFactor
-    }
-
-    private func calculateRateOfChange(current: Double, previous: Double) -> Double {
-        guard previous > 0 else { return 0.0 }
-        return current - previous
-    }
-
     func addMetrics(_ data: [String: Any], _ lastElevation: Double?) {
         let point = MetricPoint(
             heartRate: data["heartRate"] as? Double ?? 0,
@@ -182,10 +187,10 @@ class MetricsPreprocessor {
         power30sWindow.add(value: point.runningPower, at: point.timestamp)
         powerSessionTotal.add(point.runningPower)
 
-        // Update speed aggregations
-        speed30sWindow.add(value: point.runningSpeed, at: point.timestamp)
-        speed60sWindow.add(value: point.runningSpeed, at: point.timestamp)
-        speedSessionTotal.add(point.runningSpeed)
+        // Update pace aggregations (using runningSpeed which will be transformed to pace)
+        pace30sWindow.add(value: point.runningSpeed, at: point.timestamp)
+        pace60sWindow.add(value: point.runningSpeed, at: point.timestamp)
+        paceSessionTotal.add(point.runningSpeed)
 
         // Update heart rate aggregations
         heartRate30sWindow.add(value: point.heartRate, at: point.timestamp)
@@ -205,7 +210,7 @@ class MetricsPreprocessor {
         elevationGainSessionTotal30sWindow.add(value: elevationGainSessionTotal, at: point.timestamp)
         elevationGain10sWindow.add(value: point.elevation, at: point.timestamp)
         distance10sWindow.add(value: point.distance, at: point.timestamp)
-        let currentPace = speedToPaceMinutesPerKm(speed60sWindow.average())
+        let currentPace = speedToPaceMinutesPerKm(point.runningSpeed)
         let currentGrade = calculateGradePercentage(
             elevationChange: elevationGain10sWindow.sum(),
             horizontalDistance: distance10sWindow.sum()
@@ -222,13 +227,13 @@ class MetricsPreprocessor {
                                              startedAt: lastPoint?.startedAt ?? Date.distantPast),
             powerWatts30sWindowAverage: power30sWindow.average(),
             sessionPowerWattsAverage: powerSessionTotal.average(),
-            paceMinutesPerKm30sWindowAverage: speedToPaceMinutesPerKm(speed30sWindow.average()),
-            paceMinutesPerKm60sWindowAverage: speedToPaceMinutesPerKm(speed60sWindow.average()),
+            paceMinutesPerKm30sWindowAverage: pace30sWindow.average(),
+            paceMinutesPerKm60sWindowAverage: pace60sWindow.average(),
             paceMinutesPerKm60sWindowRateOfChange: calculateRateOfChange(
-                current: speedToPaceMinutesPerKm(speed60sWindow.average()),
-                previous: speedToPaceMinutesPerKm(speed60sPreviousWindow.average())
+                current: pace60sWindow.average(),
+                previous: pace60sPreviousWindow.average()
             ),
-            sessionPaceMinutesPerKmAverage: speedToPaceMinutesPerKm(speedSessionTotal.average()),
+            sessionPaceMinutesPerKmAverage: paceSessionTotal.average(),
             heartRateBPM30sWindowAverage: heartRate30sWindow.average(),
             heartRateBPM60sWindowAverage: heartRate60sWindow.average(),
             heartRateBPM60sWindowRateOfChange: calculateRateOfChange(
@@ -262,10 +267,10 @@ class MetricsPreprocessor {
         power30sWindow = RollingWindow(interval: 30)
         powerSessionTotal = SessionTotal()
 
-        speed30sWindow = RollingWindow(interval: 30)
-        speed60sPreviousWindow = RollingWindow(interval: 60)
-        speed60sWindow = RollingWindow(interval: 60, previous: speed60sPreviousWindow)
-        speedSessionTotal = SessionTotal()
+        pace30sWindow = RollingWindow(interval: 30, transform: speedToPaceMinutesPerKm)
+        pace60sPreviousWindow = RollingWindow(interval: 60, transform: speedToPaceMinutesPerKm)
+        pace60sWindow = RollingWindow(interval: 60, previous: pace60sPreviousWindow, transform: speedToPaceMinutesPerKm)
+        paceSessionTotal = SessionTotal(transform: speedToPaceMinutesPerKm)
 
         heartRate30sWindow = RollingWindow(interval: 30)
         heartRate60sPreviousWindow = RollingWindow(interval: 60)

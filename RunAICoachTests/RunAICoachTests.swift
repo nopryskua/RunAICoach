@@ -27,7 +27,7 @@ final class UnitTests: XCTestCase {
     }
 
     func testBasicSessionTotal() {
-        var total = SessionTotal()
+        let total = SessionTotal()
 
         total.add(1.0)
         total.add(3.0)
@@ -35,6 +35,18 @@ final class UnitTests: XCTestCase {
         XCTAssertEqual(total.average(), 2.0)
         XCTAssertEqual(total.getMin(), 1.0)
         XCTAssertEqual(total.getMax(), 3.0)
+    }
+
+    func testSessionTotalWithTransform() {
+        // Test with a transform that doubles the input
+        let total = SessionTotal(transform: { $0 * 2 })
+
+        total.add(1.0) // Will be stored as 2.0
+        total.add(3.0) // Will be stored as 6.0
+
+        XCTAssertEqual(total.average(), 4.0) // (2.0 + 6.0) / 2
+        XCTAssertEqual(total.getMin(), 2.0) // min(2.0, 6.0)
+        XCTAssertEqual(total.getMax(), 6.0) // max(2.0, 6.0)
     }
 
     // MARK: - RollingWindow Tests
@@ -351,19 +363,21 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.sessionHeartRateBPMMax, 160.0)
         XCTAssertEqual(aggregates.powerWatts30sWindowAverage, 210.0)
         XCTAssertEqual(aggregates.sessionPowerWattsAverage, 210.0)
-        XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 4.76, accuracy: 0.01) // 1000/3.5/60
-        XCTAssertEqual(aggregates.paceMinutesPerKm60sWindowAverage, 4.76, accuracy: 0.01)
+        XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 5.15, accuracy: 0.01) // (1000/3/60 + 1000/3.5/60) / 2
+        XCTAssertEqual(aggregates.paceMinutesPerKm60sWindowAverage, 5.15, accuracy: 0.01)
         XCTAssertEqual(aggregates.paceMinutesPerKm60sWindowRateOfChange, 0) // No previous window yet
-        XCTAssertEqual(aggregates.sessionPaceMinutesPerKmAverage, 4.76, accuracy: 0.01)
-        XCTAssertEqual(aggregates.cadenceSPM30sWindow, 50.0) // 50 steps / 1 second * 60
-        XCTAssertEqual(aggregates.cadenceSPM60sWindow, 50.0)
+        XCTAssertEqual(aggregates.sessionPaceMinutesPerKmAverage, 5.15, accuracy: 0.01)
+        XCTAssertEqual(aggregates.cadenceSPM30sWindow, 6000.0) // 100 steps / 1 second * 60
+        XCTAssertEqual(aggregates.cadenceSPM60sWindow, 6000.0)
         XCTAssertEqual(aggregates.distanceMeters, 200.0)
         XCTAssertEqual(aggregates.strideLengthMPS, 2.0) // 100m / 50 steps
         XCTAssertEqual(aggregates.sessionElevationGainMeters, 0)
         XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0)
         XCTAssertEqual(aggregates.gradePercentage10sWindow, 0)
-        XCTAssertEqual(aggregates.gradeAdjustedPace60sWindow, 4.76, accuracy: 0.01) // Same as pace since grade is 0
+        XCTAssertEqual(aggregates.gradeAdjustedPace60sWindow, 5.15, accuracy: 0.01) // Same as pace since grade is 0
     }
+
+    // TODO: Test with elevation
 
     // MARK: - Window-based Tests
 

@@ -7,61 +7,44 @@
 
 import Foundation
 
-struct SessionTotal {
-    private var total: Double
+final class SessionTotal {
+    private var sum: Double
     private var count: Int
-    private var min: Double?
-    private var max: Double?
+    private var min: Double
+    private var max: Double
+    private let transform: (Double) -> Double
 
-    init() {
-        total = 0.0
+    init(transform: @escaping (Double) -> Double = { $0 }) {
+        sum = 0.0
         count = 0
+        min = 0.0
+        max = 0.0
+        self.transform = transform
     }
 
-    private mutating func updateMin(value: Double) {
-        if min == nil {
-            min = value
-
-            return
-        }
-
-        if value < min! {
-            min = value
-        }
-    }
-
-    private mutating func updateMax(value: Double) {
-        if max == nil {
-            max = value
-
-            return
-        }
-
-        if value > max! {
-            max = value
-        }
-    }
-
-    mutating func add(_ value: Double) {
-        total += value
+    func add(_ value: Double) {
+        let transformedValue = transform(value)
+        sum += transformedValue
         count += 1
-
-        updateMin(value: value)
-        updateMax(value: value)
+        if count == 1 {
+            min = transformedValue
+            max = transformedValue
+        } else {
+            min = Swift.min(min, transformedValue)
+            max = Swift.max(max, transformedValue)
+        }
     }
 
     func average() -> Double {
-        guard count > 0 else { return 0 }
-        return total / Double(count)
+        guard count > 0 else { return 0.0 }
+        return sum / Double(count)
     }
 
     func getMin() -> Double {
-        guard count > 0 else { return 0 }
-        return min!
+        return min
     }
 
     func getMax() -> Double {
-        guard count > 0 else { return 0 }
-        return max!
+        return max
     }
 }
