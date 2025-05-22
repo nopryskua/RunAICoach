@@ -158,6 +158,11 @@ class MetricsPreprocessor {
         return pace * adjustmentFactor
     }
 
+    private func calculateRateOfChange(current: Double, previous: Double) -> Double {
+        guard previous > 0 else { return 0.0 }
+        return current - previous
+    }
+
     func addMetrics(_ data: [String: Any], _ lastElevation: Double?) {
         let point = MetricPoint(
             heartRate: data["heartRate"] as? Double ?? 0,
@@ -219,13 +224,17 @@ class MetricsPreprocessor {
             sessionPowerWattsAverage: powerSessionTotal.average(),
             paceMinutesPerKm30sWindowAverage: speedToPaceMinutesPerKm(speed30sWindow.average()),
             paceMinutesPerKm60sWindowAverage: speedToPaceMinutesPerKm(speed60sWindow.average()),
-            paceMinutesPerKm60sWindowRateOfChange: speedToPaceMinutesPerKm(speed60sWindow.average()) -
-                speedToPaceMinutesPerKm(speed60sPreviousWindow.average()),
+            paceMinutesPerKm60sWindowRateOfChange: calculateRateOfChange(
+                current: speedToPaceMinutesPerKm(speed60sWindow.average()),
+                previous: speedToPaceMinutesPerKm(speed60sPreviousWindow.average())
+            ),
             sessionPaceMinutesPerKmAverage: speedToPaceMinutesPerKm(speedSessionTotal.average()),
             heartRateBPM30sWindowAverage: heartRate30sWindow.average(),
             heartRateBPM60sWindowAverage: heartRate60sWindow.average(),
-            heartRateBPM60sWindowRateOfChange: heartRate60sWindow.average() -
-                heartRate60sPreviousWindow.average(),
+            heartRateBPM60sWindowRateOfChange: calculateRateOfChange(
+                current: heartRate60sWindow.average(),
+                previous: heartRate60sPreviousWindow.average()
+            ),
             sessionHeartRateBPMAverage: heartRateSessionTotal.average(),
             sessionHeartRateBPMMin: heartRateSessionTotal.getMin(),
             sessionHeartRateBPMMax: heartRateSessionTotal.getMax(),
