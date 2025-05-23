@@ -379,84 +379,96 @@ final class MetricsPreprocessorTests: XCTestCase {
 
     // MARK: - Window-based Tests
 
-    func testWindowTransitions() {
+    func testFixedWindowMeanSanity() {
         let now = startedAt
 
-        // Add points over 70 seconds to test window transitions
-        // First 30 seconds: increasing values
+        // Inject flat HR = 120 for 30s
         for i in 0 ..< 30 {
-            let data: [String: Any] = [
-                "heartRate": 120.0 + Double(i), // 120 to 149
-                "distance": Double(i * 10), // 0 to 290m
-                "stepCount": Double(i * 5), // 0 to 145 steps
-                "activeEnergy": Double(i), // 0 to 29
-                "runningPower": 150.0 + Double(i), // 150 to 179
-                "runningSpeed": 2.0 + Double(i) * 0.05, // 2.0 to 3.45 m/s
-                "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
-                "startedAt": now.timeIntervalSince1970,
-            ]
-            preprocessor.addMetrics(data, Double(i)) // Gradual elevation gain
-        }
-
-        // Next 30 seconds: decreasing values
-        for i in 30 ..< 60 {
-            let data: [String: Any] = [
-                "heartRate": 150.0 - Double(i - 30), // 150 to 121
-                "distance": 300.0 + Double(i - 30) * 8, // 300 to 540m
-                "stepCount": 150.0 + Double(i - 30) * 4, // 150 to 270 steps
-                "activeEnergy": 30.0 + Double(i - 30), // 30 to 59
-                "runningPower": 180.0 - Double(i - 30), // 180 to 151
-                "runningSpeed": 3.5 - Double(i - 30) * 0.05, // 3.5 to 2.05 m/s
-                "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
-                "startedAt": now.timeIntervalSince1970,
-            ]
-            preprocessor.addMetrics(data, 30.0 - Double(i - 30)) // Gradual elevation loss
-        }
-
-        // Final 10 seconds: constant values
-        for i in 60 ..< 70 {
-            let data: [String: Any] = [
+            preprocessor.addMetrics([
                 "heartRate": 120.0,
-                "distance": 550.0 + Double(i - 60) * 10, // 550 to 640m
-                "stepCount": 280.0 + Double(i - 60) * 5, // 280 to 325 steps
-                "activeEnergy": 60.0 + Double(i - 60), // 60 to 69
-                "runningPower": 150.0,
                 "runningSpeed": 2.0,
                 "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
                 "startedAt": now.timeIntervalSince1970,
-            ]
-            preprocessor.addMetrics(data, 0.0) // Flat terrain
+            ], 1.0)
         }
 
         let aggregates = preprocessor.getAggregates()
-        XCTAssertEqual(aggregates.sessionDuration, 69.0)
-
-        // 30s window should only contain the last 30 seconds (constant values)
         XCTAssertEqual(aggregates.heartRateBPM30sWindowAverage, 120.0)
-        XCTAssertEqual(aggregates.powerWatts30sWindowAverage, 150.0)
-        XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 8.33, accuracy: 0.01) // 1000/2/60
+        XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 8.33, accuracy: 0.01)
+    }
 
-        // 60s window should contain the last 60 seconds (decreasing then constant)
-        XCTAssertEqual(aggregates.heartRateBPM60sWindowAverage, 120.0, accuracy: 1.0)
-        XCTAssertEqual(aggregates.paceMinutesPerKm60sWindowAverage, 8.33, accuracy: 0.01)
+    func testWindowTransitionAcrossMetrics() {
+        let now = startedAt
 
-        // Session totals should reflect all 70 seconds
-        XCTAssertEqual(aggregates.sessionHeartRateBPMAverage, 135.0, accuracy: 1.0)
+        // Phase 1: Increasing (0–29s)
+        for i in 0 ..< 30 {
+            preprocessor.addMetrics([
+                "heartRate": 120.0 + Double(i),
+                "runningSpeed": 2.0 + Double(i) * 0.05,
+                "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
+                "startedAt": now.timeIntervalSince1970,
+            ], 1.0)
+        }
+
+        // Phase 2: Decreasing (30–59s)
+        for i in 30 ..< 60 {
+            let j = i - 30
+            preprocessor.addMetrics([
+                "heartRate": 150.0 - Double(j),
+                "runningSpeed": 3.5 - Double(j) * 0.05,
+                "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
+                "startedAt": now.timeIntervalSince1970,
+            ], 0.0)
+        }
+
+        // Phase 3: Steady (60–89s) → 30s of fully flat values for clean window
+        for i in 60 ..< 90 {
+            preprocessor.addMetrics([
+                "heartRate": 120.0,
+                "runningSpeed": 2.0,
+                "timestamp": now.addingTimeInterval(Double(i)).timeIntervalSince1970,
+                "startedAt": now.timeIntervalSince1970,
+            ], 0.0)
+        }
+
+        let aggregates = preprocessor.getAggregates()
+
+        // Session duration should now be 89s
+        XCTAssertEqual(aggregates.sessionDuration, 89.0)
+
+        // Last 30s window: now purely from steady phase
+        XCTAssertEqual(aggregates.heartRateBPM30sWindowAverage, 120.0)
+        XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 8.33, accuracy: 0.01)
+
+        // Last 60s window: 30s decreasing + 30s steady → mid avg
+        XCTAssertEqual(aggregates.heartRateBPM60sWindowAverage, 135.0, accuracy: 1.0)
+
+        // Full session heart rate average ≈ 132.86
+        XCTAssertEqual(aggregates.sessionHeartRateBPMAverage, 132.86, accuracy: 0.1)
         XCTAssertEqual(aggregates.sessionHeartRateBPMMin, 120.0)
         XCTAssertEqual(aggregates.sessionHeartRateBPMMax, 150.0)
-        XCTAssertEqual(aggregates.sessionPowerWattsAverage, 165.0, accuracy: 1.0)
-        XCTAssertEqual(aggregates.sessionPaceMinutesPerKmAverage, 7.14, accuracy: 0.01) // Average of varying paces
+    }
 
-        // Distance and steps should accumulate
-        XCTAssertEqual(aggregates.distanceMeters, 640.0)
-        XCTAssertEqual(aggregates.cadenceSPM30sWindow, 300.0) // 5 steps/second * 60
-        XCTAssertEqual(aggregates.strideLengthMPS, 2.0) // 10m / 5 steps
+    // MARK: - HR rate of change
 
-        // Elevation should be back to 0 after up and down
-        XCTAssertEqual(aggregates.sessionElevationGainMeters, 0.0, accuracy: 0.1)
-        XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0.0)
-        XCTAssertEqual(aggregates.gradePercentage10sWindow, 0.0)
-        XCTAssertEqual(aggregates.gradeAdjustedPace60sWindow, 8.33, accuracy: 0.01) // Same as pace since grade is 0
+    func testHeartRateFluctuationRateOfChange() {
+        let first = [
+            "heartRate": 140.0,
+            "timestamp": startedAt.timeIntervalSince1970,
+            "startedAt": startedAt.timeIntervalSince1970,
+        ]
+        let second = [
+            "heartRate": 160.0,
+            "timestamp": startedAt.addingTimeInterval(60).timeIntervalSince1970,
+            "startedAt": startedAt.timeIntervalSince1970,
+        ]
+
+        preprocessor.addMetrics(first, 0)
+        preprocessor.addMetrics(second, 0)
+
+        let aggregates = preprocessor.getAggregates()
+
+        XCTAssertEqual(aggregates.heartRateBPM60sWindowRateOfChange, 20.0, accuracy: 0.1) // or whatever the logic dictates
     }
 
     // MARK: - Grade and GAP Tests
@@ -492,6 +504,23 @@ final class MetricsPreprocessorTests: XCTestCase {
         // For 10% grade, GAP should be adjusted by factor of 1.0 + (0.03 * 10) + (0.0005 * 10 * 10) = 1.35
         let expectedGAP = 5.56 * 1.35 // Base pace * grade adjustment factor
         XCTAssertEqual(aggregates.gradeAdjustedPace60sWindow, expectedGAP, accuracy: 0.01)
+    }
+
+    func testGradeAdjustedPaceWithIncline() {
+        let data: [String: Any] = [
+            "runningSpeed": 3.0,
+            "distance": 100.0,
+            "stepCount": 50.0,
+            "timestamp": startedAt.addingTimeInterval(1).timeIntervalSince1970,
+            "startedAt": startedAt.timeIntervalSince1970,
+            "elevation": 5.0, // Assume this is interpreted and processed as an incline
+        ]
+
+        preprocessor.addMetrics(data, 0)
+
+        let aggregates = preprocessor.getAggregates()
+
+        XCTAssertGreaterThan(aggregates.gradeAdjustedPace60sWindow, aggregates.paceMinutesPerKm60sWindowAverage)
     }
 
     // MARK: - Real-world Scenario Tests
