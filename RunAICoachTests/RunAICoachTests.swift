@@ -582,4 +582,49 @@ final class MetricsPreprocessorTests: XCTestCase {
         let midPointAggregates = preprocessor.getAggregates()
         XCTAssertEqual(midPointAggregates.sessionElevationGainMeters, 3.0, accuracy: 0.1)
     }
+
+    // MARK: - Cadence Tests
+
+    func testSimpleCadenceCalculation() {
+        let preprocessor = MetricsPreprocessor()
+        let startTime = Date()
+
+        // Simulate 30 seconds of constant 180 spm (3 steps per second)
+        var lastStepCount = 0.0
+
+        // Add initial point to set up DeltaTracker
+        let initialData: [String: Any] = [
+            "heartRate": 150.0,
+            "distance": 0.0,
+            "stepCount": 0.0,
+            "runningSpeed": 3.0,
+            "timestamp": startTime.timeIntervalSince1970,
+            "startedAt": startTime.timeIntervalSince1970,
+        ]
+        preprocessor.addMetrics(initialData, 0)
+
+        // Now add our test points
+        for i in 1 ... 30 {
+            let timestamp = startTime.addingTimeInterval(TimeInterval(i))
+            let stepCount = Double(i) * 3.0 // 3 steps per second = 180 spm
+            let data: [String: Any] = [
+                "heartRate": 150.0,
+                "distance": Double(i) * 3.0, // 3.0 m/s running speed
+                "stepCount": stepCount,
+                "runningSpeed": 3.0,
+                "timestamp": timestamp.timeIntervalSince1970,
+                "startedAt": startTime.timeIntervalSince1970,
+            ]
+            preprocessor.addMetrics(data, 0)
+        }
+
+        let aggregates = preprocessor.getAggregates()
+
+        // 30s window should show 180 spm
+        XCTAssertEqual(aggregates.cadenceSPM30sWindow, 180.0, accuracy: 0.1)
+
+        // Verify stride length calculation
+        // At 3.0 m/s speed and 180 spm (3 steps/s), stride length should be 1.0m
+        XCTAssertEqual(aggregates.strideLengthMPS, 1.0, accuracy: 0.01)
+    }
 }
