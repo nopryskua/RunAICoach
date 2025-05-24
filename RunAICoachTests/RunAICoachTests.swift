@@ -589,9 +589,6 @@ final class MetricsPreprocessorTests: XCTestCase {
         let preprocessor = MetricsPreprocessor()
         let startTime = Date()
 
-        // Simulate 30 seconds of constant 180 spm (3 steps per second)
-        var lastStepCount = 0.0
-
         // Add initial point to set up DeltaTracker
         let initialData: [String: Any] = [
             "heartRate": 150.0,
