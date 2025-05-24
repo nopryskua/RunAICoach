@@ -120,14 +120,12 @@ class MetricsPreprocessor {
     private var distance60sWindow: RollingWindow
 
     // Elevation aggregations
-    private var elevationGain3sDeltaTracker: DeltaTracker
-    private var elevationGain3sPreviousWindow: RollingWindow
-    private var elevationGain3sWindow: RollingWindow
+    private var lastElevation: Double
     private var elevationGainSessionTotal: Double
     private var elevationGainSessionTotal30sDeltaTracker: DeltaTracker
     private var elevationGainSessionTotal30sWindow: RollingWindow
-    private var elevationGain10sDeltaTracker: DeltaTracker
-    private var elevationGain10sWindow: RollingWindow
+    private var elevationChange10sDeltaTracker: DeltaTracker
+    private var elevationChange10sWindow: RollingWindow
     private var distance10sDeltaTracker: DeltaTracker
     private var distance10sWindow: RollingWindow
     private var gap60sWindow: RollingWindow
@@ -155,14 +153,12 @@ class MetricsPreprocessor {
         distance60sDeltaTracker = DeltaTracker()
         distance60sWindow = RollingWindow(interval: 60, transform: distance60sDeltaTracker.delta)
 
-        elevationGain3sDeltaTracker = DeltaTracker()
-        elevationGain3sPreviousWindow = RollingWindow(interval: 3)
-        elevationGain3sWindow = RollingWindow(interval: 3, previous: elevationGain3sPreviousWindow, transform: elevationGain3sDeltaTracker.delta)
+        lastElevation = 0.0
         elevationGainSessionTotal = 0.0
         elevationGainSessionTotal30sDeltaTracker = DeltaTracker()
         elevationGainSessionTotal30sWindow = RollingWindow(interval: 30, transform: elevationGainSessionTotal30sDeltaTracker.delta)
-        elevationGain10sDeltaTracker = DeltaTracker()
-        elevationGain10sWindow = RollingWindow(interval: 10, transform: elevationGain10sDeltaTracker.delta)
+        elevationChange10sDeltaTracker = DeltaTracker()
+        elevationChange10sWindow = RollingWindow(interval: 10, transform: elevationChange10sDeltaTracker.delta)
         distance10sDeltaTracker = DeltaTracker()
         distance10sWindow = RollingWindow(interval: 10, transform: distance10sDeltaTracker.delta)
         gap60sWindow = RollingWindow(interval: 60)
@@ -205,14 +201,16 @@ class MetricsPreprocessor {
         distance60sWindow.add(value: point.distance, at: point.timestamp)
 
         // Update elevation gain aggregations
-        elevationGain3sWindow.add(value: point.elevation, at: point.timestamp)
-        elevationGainSessionTotal += max(0.0, elevationGain3sWindow.average() - elevationGain3sPreviousWindow.average())
+        if point.elevation > self.lastElevation {
+            elevationGainSessionTotal += point.elevation - self.lastElevation
+        }
+        self.lastElevation = point.elevation
         elevationGainSessionTotal30sWindow.add(value: elevationGainSessionTotal, at: point.timestamp)
-        elevationGain10sWindow.add(value: point.elevation, at: point.timestamp)
+        elevationChange10sWindow.add(value: point.elevation, at: point.timestamp)
         distance10sWindow.add(value: point.distance, at: point.timestamp)
         let currentPace = speedToPaceMinutesPerKm(point.runningSpeed)
         let currentGrade = calculateGradePercentage(
-            elevationChange: elevationGain10sWindow.sum(),
+            elevationChange: elevationChange10sWindow.sum(),
             horizontalDistance: distance10sWindow.sum()
         )
         let gap = calculateGAP(pace: currentPace, grade: currentGrade)
@@ -250,7 +248,7 @@ class MetricsPreprocessor {
             sessionElevationGainMeters: elevationGainSessionTotal,
             elevationGainMeters30sWindow: elevationGainSessionTotal30sWindow.sum(),
             gradePercentage10sWindow: calculateGradePercentage(
-                elevationChange: elevationGain10sWindow.sum(),
+                elevationChange: elevationChange10sWindow.sum(),
                 horizontalDistance: distance10sWindow.sum()
             ),
             gradeAdjustedPace60sWindow: gap60sWindow.average()
@@ -285,13 +283,12 @@ class MetricsPreprocessor {
         distance60sDeltaTracker = DeltaTracker()
         distance60sWindow = RollingWindow(interval: 60, transform: distance60sDeltaTracker.delta)
 
-        elevationGain3sDeltaTracker = DeltaTracker()
-        elevationGain3sWindow = RollingWindow(interval: 3, previous: elevationGain3sPreviousWindow, transform: elevationGain3sDeltaTracker.delta)
+        lastElevation = 0.0
         elevationGainSessionTotal = 0.0
         elevationGainSessionTotal30sDeltaTracker = DeltaTracker()
         elevationGainSessionTotal30sWindow = RollingWindow(interval: 30, transform: elevationGainSessionTotal30sDeltaTracker.delta)
-        elevationGain10sDeltaTracker = DeltaTracker()
-        elevationGain10sWindow = RollingWindow(interval: 10, transform: elevationGain10sDeltaTracker.delta)
+        elevationChange10sDeltaTracker = DeltaTracker()
+        elevationChange10sWindow = RollingWindow(interval: 10, transform: elevationChange10sDeltaTracker.delta)
         distance10sDeltaTracker = DeltaTracker()
         distance10sWindow = RollingWindow(interval: 10, transform: distance10sDeltaTracker.delta)
         gap60sWindow = RollingWindow(interval: 60)
