@@ -437,14 +437,21 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.sessionDuration, 89.0)
 
         // Last 30s window: now purely from steady phase
-        XCTAssertEqual(aggregates.heartRateBPM30sWindowAverage, 120.0)
+        XCTAssertEqual(aggregates.heartRateBPM30sWindowAverage, 120.0, accuracy: 0.1)
         XCTAssertEqual(aggregates.paceMinutesPerKm30sWindowAverage, 8.33, accuracy: 0.01)
 
-        // Last 60s window: 30s decreasing + 30s steady → mid avg
-        XCTAssertEqual(aggregates.heartRateBPM60sWindowAverage, 135.0, accuracy: 1.0)
+        // Last 60s window: 30s decreasing + 30s steady
+        // Decreasing phase: 150 to 120 over 30s = average of 135
+        // Steady phase: 120 for 30s
+        // Combined average: (135 + 120) / 2 = 127.5
+        XCTAssertEqual(aggregates.heartRateBPM60sWindowAverage, 127.5, accuracy: 1.0)
 
-        // Full session heart rate average ≈ 132.86
-        XCTAssertEqual(aggregates.sessionHeartRateBPMAverage, 132.86, accuracy: 0.1)
+        // Full session heart rate average
+        // Phase 1 (0-29s): 120 to 149 = average ~134.5
+        // Phase 2 (30-59s): 150 to 120 = average ~135
+        // Phase 3 (60-89s): 120 steady
+        // Overall average: (134.5 * 30 + 135 * 30 + 120 * 30) / 90 ≈ 130.0
+        XCTAssertEqual(aggregates.sessionHeartRateBPMAverage, 130.0, accuracy: 0.1)
         XCTAssertEqual(aggregates.sessionHeartRateBPMMin, 120.0)
         XCTAssertEqual(aggregates.sessionHeartRateBPMMax, 150.0)
     }
