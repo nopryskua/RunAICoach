@@ -625,3 +625,119 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.strideLengthMPS, 1.0, accuracy: 0.01)
     }
 }
+
+final class SpeechManagerTests: XCTestCase {
+    var speechManager: SpeechManager!
+
+    override func setUp() {
+        super.setUp()
+        // Try to get API key from Config
+        let apiKey = try? Config.openAIApiKey
+        speechManager = SpeechManager(openAIApiKey: apiKey)
+    }
+
+    override func tearDown() {
+        speechManager = nil
+        super.tearDown()
+    }
+
+    func testOpenAISpeech() async throws {
+        // Skip test if no API key is configured
+        guard let apiKey = try? Config.openAIApiKey else {
+            throw XCTSkip("OpenAI API key not configured. Run 'make setup' to configure.")
+        }
+
+        // Create a new speech manager with the API key
+        let testSpeechManager = SpeechManager(openAIApiKey: apiKey)
+
+        // Create an expectation for the speech completion
+        let expectation = expectation(description: "Speech completion")
+
+        // Test a simple message
+        let testMessage = "Testing OpenAI speech synthesis"
+
+        // Set up a completion handler
+        var speechCompleted = false
+        testSpeechManager.speak(testMessage) { completed in
+            speechCompleted = completed
+            expectation.fulfill()
+        }
+
+        // Wait for the speech to start playing
+        await fulfillment(of: [expectation], timeout: 10.0)
+
+        // Verify the speech started successfully
+        XCTAssertTrue(speechCompleted, "Speech should start successfully")
+
+        // Wait for actual speech to complete (approximately 30 seconds)
+        print("Waiting for speech to complete...")
+        try await Task.sleep(nanoseconds: 30 * 1_000_000_000) // 30 seconds
+        print("Speech should be complete now")
+    }
+
+    func testFallbackToAVSpeech() async throws {
+        // Create a speech manager without API key
+        let fallbackSpeechManager = SpeechManager(openAIApiKey: nil)
+
+        // Create an expectation for the speech completion
+        let expectation = expectation(description: "Speech completion")
+
+        // Test a simple message with a longer duration to ensure we can hear it
+        let testMessage = "Testing fallback speech synthesis. This is a longer message to ensure we can hear the speech clearly."
+
+        // Set up a completion handler
+        var speechCompleted = false
+        fallbackSpeechManager.speak(testMessage) { completed in
+            speechCompleted = completed
+            expectation.fulfill()
+        }
+
+        // Wait for the speech to complete (with a longer timeout to ensure we can hear it)
+        await fulfillment(of: [expectation], timeout: 15.0)
+
+        print("Waiting for speech to complete...")
+        try await Task.sleep(nanoseconds: 10 * 1_000_000_000) // 10 seconds
+        print("Speech should be complete now")
+
+        // Verify the speech was completed successfully
+        XCTAssertTrue(speechCompleted, "Fallback speech should complete successfully")
+    }
+
+    func testMultipleUtterances() async throws {
+        // Create a speech manager without API key for testing
+        let testSpeechManager = SpeechManager(openAIApiKey: nil)
+
+        // Create an expectation for the speech completion
+        let expectation = expectation(description: "Speech completion")
+
+        // Queue multiple messages
+        let messages = [
+            "First message. Testing multiple utterances.",
+            "Second message. This should play after the first one.",
+            "Third message. This should be the last one.",
+        ]
+
+        var completedCount = 0
+        let totalMessages = messages.count
+
+        // Speak each message
+        for message in messages {
+            testSpeechManager.speak(message) { _ in
+                completedCount += 1
+                if completedCount == totalMessages {
+                    expectation.fulfill()
+                }
+            }
+        }
+
+        // Wait for all messages to complete
+        await fulfillment(of: [expectation], timeout: 20.0)
+
+        print("Waiting for speech to complete...")
+        try await Task.sleep(nanoseconds: 20 * 1_000_000_000) // 20 seconds
+        print("Speech should be complete now")
+
+        // Verify all messages were completed
+        XCTAssertEqual(completedCount, totalMessages, "All messages should be completed")
+    }
+}

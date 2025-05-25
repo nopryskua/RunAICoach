@@ -13,7 +13,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
 
     static let shared = PhoneSessionManager()
     private let logger = Logger(subsystem: "com.runaicoach", category: "PhoneSession")
-    private let speechManager = SpeechManager()
+    private let speechManager: SpeechManager
     private var metricsTimer: Timer?
     private let metricsUpdateInterval: TimeInterval = 120.0
     private var isSpeaking = false
@@ -27,7 +27,10 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
 
     // MARK: - Initialization
 
-    override private init() {
+    override init() {
+        // Try to get API key from Config, fallback to nil if not available
+        let apiKey = try? Config.openAIApiKey
+        speechManager = SpeechManager(openAIApiKey: apiKey)
         super.init()
         setupWatchConnectivity()
         setupMetricsTimer()

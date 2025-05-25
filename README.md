@@ -32,6 +32,31 @@ For details on the aggregates refer to `AGGREGATES.md`.
 - watchOS 8.0+
 - Xcode 13.0+
 - Swift 5.5+
+- OpenAI API key for voice feedback
+
+## Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/RunAICoach.git
+cd RunAICoach
+```
+
+2. Run the setup command:
+```bash
+make setup
+```
+
+3. Add your OpenAI API key:
+   - Open `RunAICoach/Info.plist`
+   - Replace `YOUR_API_KEY_HERE` with your actual OpenAI API key
+
+4. Open the project in Xcode:
+```bash
+open RunAICoach.xcodeproj
+```
+
+5. Build and run the project
 
 ## Privacy
 
