@@ -15,7 +15,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private let logger = Logger(subsystem: "com.runaicoach", category: "PhoneSession")
     private let speechManager: SpeechManager
     private var metricsTimer: Timer?
-    private let metricsUpdateInterval: TimeInterval = 120.0
+    private let speakInterval: TimeInterval = 120.0
     private var isSpeaking = false
     private let elevationTracker = BarometricElevationTracker()
     private var lastElevation: Double?
@@ -57,7 +57,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     private func setupMetricsTimer() {
-        metricsTimer = Timer.scheduledTimer(withTimeInterval: metricsUpdateInterval, repeats: true) { [weak self] _ in
+        metricsTimer = Timer.scheduledTimer(withTimeInterval: speakInterval, repeats: true) { [weak self] _ in
             self?.speakCurrentMetrics()
         }
     }
