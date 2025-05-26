@@ -14,12 +14,12 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = PhoneSessionManager()
     private let logger = Logger(subsystem: "com.runaicoach", category: "PhoneSession")
     private let speechManager: SpeechManager
-    private var metricsTimer: Timer?
-    private let speakInterval: TimeInterval = 120.0
-    private var isSpeaking = false
+    private var feedbackLoopTimer: Timer?
     private let elevationTracker = BarometricElevationTracker()
     private var lastElevation: Double?
     private let metricsPreprocessor = MetricsPreprocessor()
+    private var feedbackManager: FeedbackManager!
+    private var isExecutingFeedbackLoop = false
 
     // MARK: - Published Properties
 
@@ -31,14 +31,37 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         // Try to get API key from Config, fallback to nil if not available
         let apiKey = try? Config.openAIApiKey
         speechManager = SpeechManager(openAIApiKey: apiKey)
+
         super.init()
+
+        // Create rules in order of evaluation
+        let rules: [FeedbackRule] = [
+            WorkoutStateRule(
+                isWorkoutActive: { [weak self] in self?.isWorkoutActive ?? false },
+                isExecutingFeedbackLoop: { [weak self] in self?.isExecutingFeedbackLoop ?? false }
+            ),
+        ]
+
+        // Initialize feedback manager with rules and trigger function
+        feedbackManager = FeedbackManager(rules: rules) { [weak self] current, rawMetrics, history in
+            guard let self = self else { return "No metrics available" }
+
+            // Generate feedback text based on current metrics and history
+            let feedback = self.generateFeedback(current: current, rawMetrics: rawMetrics, history: history)
+
+            // Speak the feedback
+            self.speakFeedback(feedback)
+
+            // Return the text for history
+            return feedback
+        }
+
         setupWatchConnectivity()
-        setupMetricsTimer()
         setupElevationTracker()
     }
 
     deinit {
-        metricsTimer?.invalidate()
+        feedbackLoopTimer?.invalidate()
         speechManager.stopSpeaking()
         elevationTracker.stopTracking()
     }
@@ -56,9 +79,17 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         session.activate()
     }
 
-    private func setupMetricsTimer() {
-        metricsTimer = Timer.scheduledTimer(withTimeInterval: speakInterval, repeats: true) { [weak self] _ in
-            self?.speakCurrentMetrics()
+    private func setupFeedbackLoop() {
+        feedbackLoopTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+
+            self.isExecutingFeedbackLoop = true
+            defer { self.isExecutingFeedbackLoop = false }
+
+            self.feedbackManager.maybeTriggerFeedback(
+                current: self.metricsPreprocessor.getAggregates(),
+                rawMetrics: self.metricsPreprocessor.getLatestMetrics()
+            )
         }
     }
 
@@ -124,18 +155,16 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     private func handleWorkoutEnd() {
-        isSpeaking = false
-
         // Stop services
         speechManager.stopSpeaking()
-        metricsTimer?.invalidate()
-        metricsTimer = nil
+        feedbackLoopTimer?.invalidate()
+        feedbackLoopTimer = nil
         elevationTracker.stopTracking()
         metricsPreprocessor.clear()
     }
 
     private func handleWorkoutStart() {
-        setupMetricsTimer()
+        setupFeedbackLoop()
         elevationTracker.startTracking()
     }
 
@@ -144,24 +173,13 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         metricsPreprocessor.addMetrics(data, lastElevation)
     }
 
-    private func speakCurrentMetrics() {
-        guard isWorkoutActive, !isSpeaking else { return }
-
-        isSpeaking = true
-        let metricsText = formatMetricsForSpeech()
-        speechManager.speak(metricsText)
-
-        // Reset speaking flag after a delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            self?.isSpeaking = false
-        }
+    private func speakFeedback(_ text: String) {
+        speechManager.speak(text)
     }
 
-    private func formatMetricsForSpeech() -> String {
-        let metrics = metricsPreprocessor.getAggregates()
-
+    private func generateFeedback(current: Aggregates, rawMetrics _: MetricPoint?, history _: [Feedback]) -> String {
         // TODO: Call API with metrics to get text
-        guard let jsonData = try? JSONEncoder().encode(metrics) else {
+        guard let jsonData = try? JSONEncoder().encode(current) else {
             return "Failed to encode metrics"
         }
 

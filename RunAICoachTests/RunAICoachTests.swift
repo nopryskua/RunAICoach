@@ -741,3 +741,178 @@ final class SpeechManagerTests: XCTestCase {
         XCTAssertEqual(completedCount, totalMessages, "All messages should be completed")
     }
 }
+
+final class FeedbackManagerTests: XCTestCase {
+    var feedbackManager: FeedbackManager!
+    var feedbackHistory: [Feedback] = []
+    var isWorkoutActive = false
+    var isExecutingFeedbackLoop = false
+
+    // A rule that always triggers feedback
+    private class AlwaysTriggerRule: FeedbackRule {
+        func shouldTrigger(current _: Aggregates, rawMetrics _: MetricPoint?, history _: [Feedback]) -> FeedbackDecision {
+            return .trigger
+        }
+    }
+
+    // Test metrics that are the same across all tests
+    private let testMetrics = Aggregates(
+        sessionDuration: 10,
+        powerWatts30sWindowAverage: 200,
+        sessionPowerWattsAverage: 200,
+        paceMinutesPerKm30sWindowAverage: 5,
+        paceMinutesPerKm60sWindowAverage: 5,
+        paceMinutesPerKm60sWindowRateOfChange: 1,
+        sessionPaceMinutesPerKmAverage: 5,
+        heartRateBPM30sWindowAverage: 150,
+        heartRateBPM60sWindowAverage: 150,
+        heartRateBPM60sWindowRateOfChange: 20,
+        sessionHeartRateBPMAverage: 150,
+        sessionHeartRateBPMMin: 140,
+        sessionHeartRateBPMMax: 160,
+        cadenceSPM30sWindow: 180,
+        cadenceSPM60sWindow: 180,
+        distanceMeters: 1000,
+        strideLengthMPS: 1.5,
+        sessionElevationGainMeters: 10,
+        elevationGainMeters30sWindow: 5,
+        gradePercentage10sWindow: 10,
+        gradeAdjustedPace60sWindow: 6
+    )
+
+    // Test raw metrics that are the same across all tests
+    private let testRawMetrics = MetricPoint(
+        heartRate: 150,
+        distance: 1000,
+        stepCount: 500,
+        activeEnergy: 100,
+        elevation: 10,
+        runningPower: 200,
+        runningSpeed: 3.0,
+        timestamp: Date(),
+        startedAt: Date()
+    )
+
+    override func setUp() {
+        super.setUp()
+        feedbackHistory = []
+        isWorkoutActive = false
+        isExecutingFeedbackLoop = false
+    }
+
+    override func tearDown() {
+        feedbackManager = nil
+        feedbackHistory = []
+        isWorkoutActive = false
+        isExecutingFeedbackLoop = false
+        super.tearDown()
+    }
+
+    // MARK: - Empty Rules Tests
+
+    func testEmptyRulesNeverTriggers() {
+        // Create feedback manager with no rules
+        feedbackManager = FeedbackManager(rules: []) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "This should never be called",
+                ruleName: "NoRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Try to trigger feedback
+        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+
+        // Verify no feedback was generated
+        XCTAssertEqual(feedbackHistory.count, 0)
+    }
+
+    // MARK: - Always Trigger Rule Tests
+
+    func testAlwaysTriggerRule() {
+        // Create feedback manager with the always trigger rule
+        feedbackManager = FeedbackManager(rules: [AlwaysTriggerRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "AlwaysTriggerRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Try to trigger feedback
+        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+
+        // Verify feedback was generated
+        XCTAssertFalse(feedbackHistory.isEmpty, "Feedback history should not be empty")
+        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(feedbackHistory[0].content, "Test feedback")
+        XCTAssertEqual(feedbackHistory[0].ruleName, "AlwaysTriggerRule")
+    }
+
+    // MARK: - WorkoutStateRule Tests
+
+    func testWorkoutStateRuleWhenInactiveAndActive() {
+        // Create feedback manager with WorkoutStateRule and AlwaysTriggerRule
+        feedbackManager = FeedbackManager(rules: [
+            WorkoutStateRule(
+                isWorkoutActive: { [weak self] in self?.isWorkoutActive ?? false },
+                isExecutingFeedbackLoop: { [weak self] in self?.isExecutingFeedbackLoop ?? false }
+            ),
+            AlwaysTriggerRule(),
+        ]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "AlwaysTriggerRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Try to trigger feedback while workout is inactive
+        isWorkoutActive = false
+        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+
+        // Verify no feedback was generated
+        XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when workout is inactive")
+
+        // Try to trigger feedback while workout is active
+        isWorkoutActive = true
+        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+
+        // Verify feedback was generated
+        XCTAssertEqual(feedbackHistory.count, 1, "Feedback should be generated when workout is active")
+        XCTAssertEqual(feedbackHistory[0].ruleName, "AlwaysTriggerRule")
+    }
+
+    func testWorkoutStateRuleWhenExecutingFeedbackLoop() {
+        // Create feedback manager with WorkoutStateRule and AlwaysTriggerRule
+        feedbackManager = FeedbackManager(rules: [
+            WorkoutStateRule(
+                isWorkoutActive: { [weak self] in self?.isWorkoutActive ?? false },
+                isExecutingFeedbackLoop: { [weak self] in self?.isExecutingFeedbackLoop ?? false }
+            ),
+            AlwaysTriggerRule(),
+        ]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "AlwaysTriggerRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Try to trigger feedback while feedback loop is executing
+        isWorkoutActive = true
+        isExecutingFeedbackLoop = true
+        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+
+        // Verify no feedback was generated
+        XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when feedback loop is executing")
+    }
+}

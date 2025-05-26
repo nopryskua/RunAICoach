@@ -10,6 +10,7 @@
 		2A5C230C2DC7CE97003F4370 /* PhoneSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5C230B2DC7CE97003F4370 /* PhoneSessionManager.swift */; };
 		2A7197A32DE340DB00DB059B /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7197A22DE340DB00DB059B /* Config.swift */; };
 		2A7197A52DE340E900DB059B /* Info.plist.template in Resources */ = {isa = PBXBuildFile; fileRef = 2A7197A42DE340E900DB059B /* Info.plist.template */; };
+		2A7197A72DE4EB7700DB059B /* FeedbackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7197A62DE4EB7700DB059B /* FeedbackManager.swift */; };
 		2A91D6392DC5869400B9EC36 /* RunAICoachApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D6382DC5869400B9EC36 /* RunAICoachApp.swift */; };
 		2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A91D63A2DC5869400B9EC36 /* ContentView.swift */; };
 		2A91D63D2DC5869C00B9EC36 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A91D63C2DC5869C00B9EC36 /* Assets.xcassets */; };
@@ -71,6 +72,7 @@
 		2A5C230B2DC7CE97003F4370 /* PhoneSessionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneSessionManager.swift; sourceTree = "<group>"; };
 		2A7197A22DE340DB00DB059B /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		2A7197A42DE340E900DB059B /* Info.plist.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist.template; sourceTree = "<group>"; };
+		2A7197A62DE4EB7700DB059B /* FeedbackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackManager.swift; sourceTree = "<group>"; };
 		2A91D6352DC5869400B9EC36 /* RunAICoach.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RunAICoach.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A91D6382DC5869400B9EC36 /* RunAICoachApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunAICoachApp.swift; sourceTree = "<group>"; };
 		2A91D63A2DC5869400B9EC36 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				2ABD7B142DD5443800DC8C84 /* RollingWindow.swift */,
 				2ABD7B1B2DD547B300DC8C84 /* SessionTotal.swift */,
 				2ABD7B1D2DD887A500DC8C84 /* DeltaTracker.swift */,
+				2A7197A62DE4EB7700DB059B /* FeedbackManager.swift */,
 			);
 			path = RunAICoach;
 			sourceTree = "<group>";
@@ -373,6 +376,7 @@
 				2AAA9CDA2DCABE9300F6C2AC /* BarometricElevationTracker.swift in Sources */,
 				2A91D63B2DC5869400B9EC36 /* ContentView.swift in Sources */,
 				2AAA9CE02DCC1B0200F6C2AC /* MetricsPreprocessor.swift in Sources */,
+				2A7197A72DE4EB7700DB059B /* FeedbackManager.swift in Sources */,
 				2A5C230C2DC7CE97003F4370 /* PhoneSessionManager.swift in Sources */,
 				2ABD7B152DD5443800DC8C84 /* RollingWindow.swift in Sources */,
 				2ABD7B1C2DD547B300DC8C84 /* SessionTotal.swift in Sources */,
