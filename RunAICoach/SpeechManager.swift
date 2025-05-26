@@ -7,6 +7,7 @@
 
 import AVFoundation
 import Foundation
+import os.log
 
 class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegate {
     private let synthesizer = AVSpeechSynthesizer()
@@ -17,6 +18,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
     private let openAIApiKey: String?
     private var currentOpenAICompletion: ((Bool) -> Void)?
     private var currentAudioPlayer: AVAudioPlayer?
+    private let logger = Logger(subsystem: "com.runaicoach", category: "Speech")
 
     init(openAIApiKey: String? = nil) {
         self.openAIApiKey = openAIApiKey
@@ -34,13 +36,10 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
             try session.setActive(true, options: .notifyOthersOnDeactivation)
 
             // Log audio session configuration
-            print("Audio session configured successfully")
-            print("Category: \(session.category)")
-            print("Mode: \(session.mode)")
-            print("Options: \(session.categoryOptions)")
-            print("Output volume: \(session.outputVolume)")
+            logger.info("Audio session configured successfully")
+            logger.debug("Category: \(String(describing: session.category)), Mode: \(String(describing: session.mode)), Options: \(String(describing: session.categoryOptions)), Volume: \(session.outputVolume)")
         } catch {
-            print("Failed to configure audio session: \(error)")
+            logger.error("Failed to configure audio session: \(error.localizedDescription)")
         }
     }
 
@@ -85,9 +84,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
         utterance.volume = 1.0
         utterance.pitchMultiplier = 1.0
 
-        // Log speech attempt
-        print("Speaking with AVSpeechSynthesizer: \(text)")
-
+        logger.debug("Speaking with AVSpeechSynthesizer: \(text)")
         synthesizer.speak(utterance)
     }
 
@@ -113,7 +110,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
 
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
-        print("Sending request to OpenAI TTS API...")
+        logger.debug("Sending request to OpenAI TTS API...")
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             guard let self = self else {
                 completion(false)
@@ -121,30 +118,30 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
             }
 
             if let error = error {
-                print("OpenAI API error: \(error)")
+                self.logger.error("OpenAI API error: \(error.localizedDescription)")
                 completion(false)
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("Invalid response from OpenAI API")
+                self.logger.error("Invalid response from OpenAI API")
                 completion(false)
                 return
             }
 
             if httpResponse.statusCode != 200 {
-                print("OpenAI API returned status code: \(httpResponse.statusCode)")
+                self.logger.error("OpenAI API returned status code: \(httpResponse.statusCode)")
                 completion(false)
                 return
             }
 
             guard let data = data else {
-                print("No data received from OpenAI API")
+                self.logger.error("No data received from OpenAI API")
                 completion(false)
                 return
             }
 
-            print("Received audio data from OpenAI API, size: \(data.count) bytes")
+            self.logger.debug("Received audio data from OpenAI API, size: \(data.count) bytes")
 
             // Play the audio data
             do {
@@ -163,10 +160,10 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
 
                 // Play the audio
                 let success = audioPlayer.play()
-                print("Started playing OpenAI audio: \(success)")
+                self.logger.debug("Started playing OpenAI audio: \(success)")
 
                 if !success {
-                    print("Failed to start playing audio")
+                    self.logger.error("Failed to start playing audio")
                     self.currentAudioPlayer = nil
                     completion(false)
                 } else {
@@ -175,7 +172,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
                     completion(true)
                 }
             } catch {
-                print("Failed to create audio player: \(error)")
+                self.logger.error("Failed to create audio player: \(error.localizedDescription)")
                 completion(false)
             }
         }
@@ -186,14 +183,14 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
     // MARK: - AVAudioPlayerDelegate
 
     func audioPlayerDidFinishPlaying(_: AVAudioPlayer, successfully flag: Bool) {
-        print("Audio player finished playing, success: \(flag)")
+        logger.debug("Audio player finished playing, success: \(flag)")
         currentAudioPlayer = nil
         currentOpenAICompletion = nil
         trySpeakingNext()
     }
 
     func audioPlayerDecodeErrorDidOccur(_: AVAudioPlayer, error: Error?) {
-        print("Audio player decode error: \(error?.localizedDescription ?? "unknown error")")
+        logger.error("Audio player decode error: \(error?.localizedDescription ?? "unknown error")")
         currentAudioPlayer = nil
         currentOpenAICompletion = nil
         trySpeakingNext()
