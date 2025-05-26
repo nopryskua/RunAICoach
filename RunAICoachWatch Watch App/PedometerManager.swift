@@ -33,9 +33,7 @@ class PedometerManager: NSObject {
                 return
             }
 
-            DispatchQueue.main.async {
-                self.onStepCountUpdate?(data.numberOfSteps.doubleValue)
-            }
+            self.onStepCountUpdate?(data.numberOfSteps.doubleValue)
         }
 
         // Start live updates
@@ -45,9 +43,7 @@ class PedometerManager: NSObject {
                 return
             }
 
-            DispatchQueue.main.async {
-                self.onStepCountUpdate?(data.numberOfSteps.doubleValue)
-            }
+            self.onStepCountUpdate?(data.numberOfSteps.doubleValue)
         }
     }
 
