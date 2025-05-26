@@ -82,24 +82,28 @@ class HealthKitManager: NSObject, ObservableObject {
     // MARK: - Workout Control
 
     func startWorkout() {
-        guard !isWorkoutActive else {
-            logger.warning("Attempted to start workout while one is already active")
-            return
-        }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
 
-        if let startDate = healthKitCollector.startWorkout() {
-            startedAt = startDate
-            isWorkoutActive = true
-            startMetricsTimer()
-            pedometerManager.startTracking()
+            guard !self.isWorkoutActive else {
+                self.logger.warning("Attempted to start workout while one is already active")
+                return
+            }
+
+            if let startDate = self.healthKitCollector.startWorkout() {
+                self.startedAt = startDate
+                self.isWorkoutActive = true
+                self.startMetricsTimer()
+                self.pedometerManager.startTracking()
+            }
         }
     }
 
     func stopWorkout() {
-        guard isWorkoutActive else { return }
-
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            guard self.isWorkoutActive else { return }
+
             self.isWorkoutActive = false
             self.metricsUpdateTimer?.invalidate()
             self.metricsUpdateTimer = nil
@@ -115,42 +119,48 @@ class HealthKitManager: NSObject, ObservableObject {
     // MARK: - Private Methods
 
     private func startMetricsTimer() {
-        metricsUpdateTimer = Timer.scheduledTimer(withTimeInterval: metricsUpdateInterval, repeats: true) { [weak self] _ in
-            self?.sendMetrics()
+        DispatchQueue.main.async { [weak self] in
+            self?.metricsUpdateTimer = Timer.scheduledTimer(withTimeInterval: self?.metricsUpdateInterval ?? 1.0, repeats: true) { [weak self] _ in
+                self?.sendMetrics()
+            }
         }
     }
 
     private func sendMetrics() {
-        let session = WCSession.default
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
 
-        guard session.isReachable else {
-            logger.error("WCSession is not reachable")
-            return
-        }
+            let session = WCSession.default
 
-        let metrics: [String: Any] = [
-            "startedAt": startedAt?.timeIntervalSince1970 ?? 0,
-            "timestamp": Date().timeIntervalSince1970,
-            "heartRate": heartRate,
-            "distance": distance,
-            "activeEnergy": activeEnergy,
-            "stepCount": stepCount,
-            "runningPower": runningPower,
-            "runningSpeed": runningSpeed,
-            "isWorkoutActive": isWorkoutActive,
-        ]
+            guard session.isReachable else {
+                self.logger.error("WCSession is not reachable")
+                return
+            }
 
-        // Try to update application context first
-        do {
-            try session.updateApplicationContext(metrics)
-            logger.debug("Updated application context with metrics")
-        } catch {
-            logger.error("Failed to update application context: \(error.localizedDescription)")
-        }
+            let metrics: [String: Any] = [
+                "startedAt": self.startedAt?.timeIntervalSince1970 ?? 0,
+                "timestamp": Date().timeIntervalSince1970,
+                "heartRate": self.heartRate,
+                "distance": self.distance,
+                "activeEnergy": self.activeEnergy,
+                "stepCount": self.stepCount,
+                "runningPower": self.runningPower,
+                "runningSpeed": self.runningSpeed,
+                "isWorkoutActive": self.isWorkoutActive,
+            ]
 
-        // Also send as a message for immediate delivery
-        session.sendMessage(metrics, replyHandler: nil) { [weak self] error in
-            self?.logger.error("Failed to send metrics: \(error.localizedDescription)")
+            // Try to update application context first
+            do {
+                try session.updateApplicationContext(metrics)
+                self.logger.debug("Updated application context with metrics")
+            } catch {
+                self.logger.error("Failed to update application context: \(error.localizedDescription)")
+            }
+
+            // Also send as a message for immediate delivery
+            session.sendMessage(metrics, replyHandler: nil) { [weak self] error in
+                self?.logger.error("Failed to send metrics: \(error.localizedDescription)")
+            }
         }
     }
 }
