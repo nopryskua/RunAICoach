@@ -78,3 +78,113 @@ class WorkoutStateRule: FeedbackRule {
         return .next
     }
 }
+
+class InitialFeedbackRule: FeedbackRule {
+    private let minimumInterval: TimeInterval = 30 // 30 seconds before first feedback
+
+    func shouldTrigger(current: Aggregates, rawMetrics _: MetricPoint?, history: [Feedback]) -> FeedbackDecision {
+        guard current.sessionDuration > minimumInterval else { return .skip }
+
+        if history.isEmpty {
+            return .trigger
+        }
+
+        return .next
+    }
+}
+
+class FirstKilometerRule: FeedbackRule {
+    func shouldTrigger(current _: Aggregates, rawMetrics: MetricPoint?, history _: [Feedback]) -> FeedbackDecision {
+        guard let metrics = rawMetrics else { return .skip }
+        guard metrics.distance >= 1000 else { return .skip }
+
+        return .next
+    }
+}
+
+class KilometerRule: FeedbackRule {
+    private let triggerWindow: Double = 50 // meters
+
+    func shouldTrigger(current _: Aggregates, rawMetrics: MetricPoint?, history _: [Feedback]) -> FeedbackDecision {
+        guard let metrics = rawMetrics else { return .skip }
+
+        // Calculate current kilometer and remaining meters
+        let totalMeters = metrics.distance
+        let currentKilometer = floor(totalMeters / 1000)
+
+        let metersInCurrentKilometer = totalMeters - (currentKilometer * 1000)
+
+        // Trigger if we're in the first 50 meters of a kilometer
+        if metersInCurrentKilometer <= triggerWindow {
+            return .trigger
+        }
+
+        return .next
+    }
+}
+
+class PaceChangeRule: FeedbackRule {
+    private let paceChangeThreshold: Double = 0.5 // minutes per km
+
+    func shouldTrigger(current: Aggregates, rawMetrics _: MetricPoint?, history _: [Feedback]) -> FeedbackDecision {
+        // Check for significant pace changes
+        if abs(current.paceMinutesPerKm60sWindowRateOfChange) > paceChangeThreshold {
+            return .trigger
+        }
+
+        return .next
+    }
+}
+
+class HeartRateChangeRule: FeedbackRule {
+    private let heartRateChangeThreshold: Double = 5.0 // BPM
+
+    func shouldTrigger(current: Aggregates, rawMetrics _: MetricPoint?, history _: [Feedback]) -> FeedbackDecision {
+        // Check for significant heart rate changes
+        if abs(current.heartRateBPM60sWindowRateOfChange) > heartRateChangeThreshold {
+            return .trigger
+        }
+
+        return .next
+    }
+}
+
+class ElevationChangeRule: FeedbackRule {
+    private let gradeThreshold: Double = 5.0 // percentage
+
+    func shouldTrigger(current: Aggregates, rawMetrics _: MetricPoint?, history _: [Feedback]) -> FeedbackDecision {
+        // Check for significant grade changes
+        if abs(current.gradePercentage10sWindow) > gradeThreshold {
+            return .trigger
+        }
+
+        return .next
+    }
+}
+
+class MaxTimeRule: FeedbackRule {
+    private let maximumInterval: TimeInterval = 5 * 60 // 5 minutes maximum between feedbacks
+
+    func shouldTrigger(current _: Aggregates, rawMetrics: MetricPoint?, history: [Feedback]) -> FeedbackDecision {
+        // If we don't have raw metrics with timestamp, we can't make a decision
+        guard let metrics = rawMetrics else { return .next }
+
+        // If there's no history, use workout start time as reference
+        let referenceTime: Date
+        if let lastFeedback = history.last {
+            referenceTime = lastFeedback.timestamp
+        } else {
+            referenceTime = metrics.startedAt
+        }
+
+        // Calculate time difference between reference time and current metrics
+        let timeSinceReference = metrics.timestamp.timeIntervalSince(referenceTime)
+
+        // Trigger if more than maximumInterval has passed
+        if timeSinceReference > maximumInterval {
+            return .trigger
+        }
+
+        return .next
+    }
+}

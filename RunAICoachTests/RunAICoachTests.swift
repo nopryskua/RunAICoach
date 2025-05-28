@@ -201,7 +201,6 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.sessionHeartRateBPMMax, 0)
         XCTAssertEqual(aggregates.cadenceSPM30sWindow, 0)
         XCTAssertEqual(aggregates.cadenceSPM60sWindow, 0)
-        XCTAssertEqual(aggregates.distanceMeters, 0)
         XCTAssertEqual(aggregates.strideLengthMPS, 0)
         XCTAssertEqual(aggregates.sessionElevationGainMeters, 0)
         XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0)
@@ -241,7 +240,6 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.sessionHeartRateBPMMax, 0)
         XCTAssertEqual(aggregates.cadenceSPM30sWindow, 0)
         XCTAssertEqual(aggregates.cadenceSPM60sWindow, 0)
-        XCTAssertEqual(aggregates.distanceMeters, 0)
         XCTAssertEqual(aggregates.strideLengthMPS, 0)
         XCTAssertEqual(aggregates.sessionElevationGainMeters, 0)
         XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0)
@@ -280,7 +278,6 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.sessionHeartRateBPMMax, 0)
         XCTAssertEqual(aggregates.cadenceSPM30sWindow, 0)
         XCTAssertEqual(aggregates.cadenceSPM60sWindow, 0)
-        XCTAssertEqual(aggregates.distanceMeters, 0)
         XCTAssertEqual(aggregates.strideLengthMPS, 0)
         XCTAssertEqual(aggregates.sessionElevationGainMeters, 0)
         XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0)
@@ -317,7 +314,6 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.sessionPaceMinutesPerKmAverage, 5.56, accuracy: 0.01)
         XCTAssertEqual(aggregates.cadenceSPM30sWindow, 0.0) // Needs more time to calculate
         XCTAssertEqual(aggregates.cadenceSPM60sWindow, 0.0)
-        XCTAssertEqual(aggregates.distanceMeters, 100.0)
         XCTAssertEqual(aggregates.strideLengthMPS, 2.0) // 100m / 50 steps
         XCTAssertEqual(aggregates.sessionElevationGainMeters, 0)
         XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0)
@@ -369,7 +365,6 @@ final class MetricsPreprocessorTests: XCTestCase {
         XCTAssertEqual(aggregates.sessionPaceMinutesPerKmAverage, 5.15, accuracy: 0.01)
         XCTAssertEqual(aggregates.cadenceSPM30sWindow, 6000.0) // 100 steps / 1 second * 60
         XCTAssertEqual(aggregates.cadenceSPM60sWindow, 6000.0)
-        XCTAssertEqual(aggregates.distanceMeters, 200.0)
         XCTAssertEqual(aggregates.strideLengthMPS, 2.0) // 100m / 50 steps
         XCTAssertEqual(aggregates.sessionElevationGainMeters, 0)
         XCTAssertEqual(aggregates.elevationGainMeters30sWindow, 0)
@@ -755,30 +750,77 @@ final class FeedbackManagerTests: XCTestCase {
         }
     }
 
-    // Test metrics that are the same across all tests
-    private let testMetrics = Aggregates(
-        sessionDuration: 10,
-        powerWatts30sWindowAverage: 200,
-        sessionPowerWattsAverage: 200,
-        paceMinutesPerKm30sWindowAverage: 5,
-        paceMinutesPerKm60sWindowAverage: 5,
-        paceMinutesPerKm60sWindowRateOfChange: 1,
-        sessionPaceMinutesPerKmAverage: 5,
-        heartRateBPM30sWindowAverage: 150,
-        heartRateBPM60sWindowAverage: 150,
-        heartRateBPM60sWindowRateOfChange: 20,
-        sessionHeartRateBPMAverage: 150,
-        sessionHeartRateBPMMin: 140,
-        sessionHeartRateBPMMax: 160,
-        cadenceSPM30sWindow: 180,
-        cadenceSPM60sWindow: 180,
-        distanceMeters: 1000,
-        strideLengthMPS: 1.5,
-        sessionElevationGainMeters: 10,
-        elevationGainMeters30sWindow: 5,
-        gradePercentage10sWindow: 10,
-        gradeAdjustedPace60sWindow: 6
-    )
+    // Helper function to create test Aggregates with optional parameters
+    private func makeTestAggregates(
+        sessionDuration: TimeInterval = 0,
+        powerWatts30sWindowAverage: Double = 0,
+        sessionPowerWattsAverage: Double = 0,
+        paceMinutesPerKm30sWindowAverage: Double = 0,
+        paceMinutesPerKm60sWindowAverage: Double = 0,
+        paceMinutesPerKm60sWindowRateOfChange: Double = 0,
+        sessionPaceMinutesPerKmAverage: Double = 0,
+        heartRateBPM30sWindowAverage: Double = 0,
+        heartRateBPM60sWindowAverage: Double = 0,
+        heartRateBPM60sWindowRateOfChange: Double = 0,
+        sessionHeartRateBPMAverage: Double = 0,
+        sessionHeartRateBPMMin: Double = 0,
+        sessionHeartRateBPMMax: Double = 0,
+        cadenceSPM30sWindow: Double = 0,
+        cadenceSPM60sWindow: Double = 0,
+        strideLengthMPS: Double = 0,
+        sessionElevationGainMeters: Double = 0,
+        elevationGainMeters30sWindow: Double = 0,
+        gradePercentage10sWindow: Double = 0,
+        gradeAdjustedPace60sWindow: Double = 0
+    ) -> Aggregates {
+        return Aggregates(
+            sessionDuration: sessionDuration,
+            powerWatts30sWindowAverage: powerWatts30sWindowAverage,
+            sessionPowerWattsAverage: sessionPowerWattsAverage,
+            paceMinutesPerKm30sWindowAverage: paceMinutesPerKm30sWindowAverage,
+            paceMinutesPerKm60sWindowAverage: paceMinutesPerKm60sWindowAverage,
+            paceMinutesPerKm60sWindowRateOfChange: paceMinutesPerKm60sWindowRateOfChange,
+            sessionPaceMinutesPerKmAverage: sessionPaceMinutesPerKmAverage,
+            heartRateBPM30sWindowAverage: heartRateBPM30sWindowAverage,
+            heartRateBPM60sWindowAverage: heartRateBPM60sWindowAverage,
+            heartRateBPM60sWindowRateOfChange: heartRateBPM60sWindowRateOfChange,
+            sessionHeartRateBPMAverage: sessionHeartRateBPMAverage,
+            sessionHeartRateBPMMin: sessionHeartRateBPMMin,
+            sessionHeartRateBPMMax: sessionHeartRateBPMMax,
+            cadenceSPM30sWindow: cadenceSPM30sWindow,
+            cadenceSPM60sWindow: cadenceSPM60sWindow,
+            strideLengthMPS: strideLengthMPS,
+            sessionElevationGainMeters: sessionElevationGainMeters,
+            elevationGainMeters30sWindow: elevationGainMeters30sWindow,
+            gradePercentage10sWindow: gradePercentage10sWindow,
+            gradeAdjustedPace60sWindow: gradeAdjustedPace60sWindow
+        )
+    }
+
+    // Helper function to create test MetricPoint with optional parameters
+    private func makeTestMetricPoint(
+        heartRate: Double = 150,
+        distance: Double = 1000,
+        stepCount: Double = 500,
+        activeEnergy: Double = 100,
+        elevation: Double = 10,
+        runningPower: Double = 200,
+        runningSpeed: Double = 3.0,
+        timestamp: Date = Date(),
+        startedAt: Date = Date()
+    ) -> MetricPoint {
+        return MetricPoint(
+            heartRate: heartRate,
+            distance: distance,
+            stepCount: stepCount,
+            activeEnergy: activeEnergy,
+            elevation: elevation,
+            runningPower: runningPower,
+            runningSpeed: runningSpeed,
+            timestamp: timestamp,
+            startedAt: startedAt
+        )
+    }
 
     // Test raw metrics that are the same across all tests
     private let testRawMetrics = MetricPoint(
@@ -823,7 +865,7 @@ final class FeedbackManagerTests: XCTestCase {
         }
 
         // Try to trigger feedback
-        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify no feedback was generated
         XCTAssertEqual(feedbackHistory.count, 0)
@@ -844,7 +886,7 @@ final class FeedbackManagerTests: XCTestCase {
         }
 
         // Try to trigger feedback
-        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify feedback was generated
         XCTAssertFalse(feedbackHistory.isEmpty, "Feedback history should not be empty")
@@ -875,14 +917,14 @@ final class FeedbackManagerTests: XCTestCase {
 
         // Try to trigger feedback while workout is inactive
         isWorkoutActive = false
-        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify no feedback was generated
         XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when workout is inactive")
 
         // Try to trigger feedback while workout is active
         isWorkoutActive = true
-        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify feedback was generated
         XCTAssertEqual(feedbackHistory.count, 1, "Feedback should be generated when workout is active")
@@ -910,9 +952,182 @@ final class FeedbackManagerTests: XCTestCase {
         // Try to trigger feedback while feedback loop is executing
         isWorkoutActive = true
         isExecutingFeedbackLoop = true
-        feedbackManager.maybeTriggerFeedback(current: testMetrics, rawMetrics: testRawMetrics)
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify no feedback was generated
         XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when feedback loop is executing")
+    }
+
+    // MARK: - InitialFeedbackRule Tests
+
+    func testInitialFeedbackRule() {
+        feedbackManager = FeedbackManager(rules: [InitialFeedbackRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "InitialFeedbackRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Should not trigger before 30s
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(sessionDuration: 20), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 0)
+
+        // Should trigger after 30s
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(sessionDuration: 31), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should no longer trigger since the initial feedack is there
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(sessionDuration: 35), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+    }
+
+    // MARK: - KilometerRule Tests
+
+    func testKilometerRule() {
+        feedbackManager = FeedbackManager(rules: [KilometerRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "KilometerRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Should trigger in first 50m of each km
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 25))
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should not trigger outside first 50m
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 200))
+        XCTAssertEqual(feedbackHistory.count, 1)
+    }
+
+    // MARK: - FirstKilometerRule Tests
+
+    func testFirstKilometerRule() {
+        feedbackManager = FeedbackManager(rules: [FirstKilometerRule(), AlwaysTriggerRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "FirstKilometerRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Should skip before 1km
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 500))
+        XCTAssertEqual(feedbackHistory.count, 0)
+
+        // Should allow after 1km
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 1001))
+        XCTAssertEqual(feedbackHistory.count, 1)
+    }
+
+    // MARK: - PaceChangeRule Tests
+
+    func testPaceChangeRule() {
+        feedbackManager = FeedbackManager(rules: [PaceChangeRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "PaceChangeRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Should trigger on significant pace change
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(paceMinutesPerKm60sWindowRateOfChange: 1.0), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should not trigger on insignificant pace change
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(paceMinutesPerKm60sWindowRateOfChange: 0.0), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+    }
+
+    // MARK: - HeartRateChangeRule Tests
+
+    func testHeartRateChangeRule() {
+        feedbackManager = FeedbackManager(rules: [HeartRateChangeRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "HeartRateChangeRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Should trigger on significant heart rate change
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(heartRateBPM60sWindowRateOfChange: 10.0), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should not trigger on insignificant heart rate change
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(heartRateBPM60sWindowRateOfChange: 0.0), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+    }
+
+    // MARK: - ElevationChangeRule Tests
+
+    func testElevationChangeRule() {
+        feedbackManager = FeedbackManager(rules: [ElevationChangeRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "ElevationChangeRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        // Should trigger on significant grade
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(gradePercentage10sWindow: 10.0), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should not trigger on insignificant grade
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(gradePercentage10sWindow: 0.0), rawMetrics: makeTestMetricPoint())
+        XCTAssertEqual(feedbackHistory.count, 1)
+    }
+
+    // MARK: - MaxTimeRule Tests
+
+    func testMaxTimeRule() {
+        feedbackManager = FeedbackManager(rules: [MaxTimeRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "MaxTimeRule"
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        let startTime = Date()
+
+        // First feedback should trigger (no history)
+        feedbackManager.maybeTriggerFeedback(
+            current: makeTestAggregates(),
+            rawMetrics: makeTestMetricPoint(timestamp: startTime)
+        )
+        XCTAssertEqual(feedbackHistory.count, 0)
+
+        // Should not trigger before 5 minutes
+        feedbackManager.maybeTriggerFeedback(
+            current: makeTestAggregates(),
+            rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(6 * 60))
+        )
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should trigger after 5 minutes
+        feedbackManager.maybeTriggerFeedback(
+            current: makeTestAggregates(),
+            rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(12 * 60))
+        )
+        XCTAssertEqual(feedbackHistory.count, 2)
     }
 }

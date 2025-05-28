@@ -40,6 +40,13 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
                 isWorkoutActive: { [weak self] in self?.isWorkoutActive ?? false },
                 isExecutingFeedbackLoop: { [weak self] in self?.isExecutingFeedbackLoop ?? false }
             ),
+            InitialFeedbackRule(),
+            FirstKilometerRule(),
+            KilometerRule(),
+            PaceChangeRule(),
+            HeartRateChangeRule(),
+            ElevationChangeRule(),
+            MaxTimeRule(),
         ]
 
         // Initialize feedback manager with rules and trigger function

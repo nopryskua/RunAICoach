@@ -29,7 +29,6 @@ struct Aggregates: Encodable {
     let sessionHeartRateBPMMax: Double
     let cadenceSPM30sWindow: Double
     let cadenceSPM60sWindow: Double
-    let distanceMeters: Double
     let strideLengthMPS: Double
     let sessionElevationGainMeters: Double
     let elevationGainMeters30sWindow: Double
@@ -243,7 +242,6 @@ class MetricsPreprocessor {
             sessionHeartRateBPMMax: heartRateSessionTotal.getMax(),
             cadenceSPM30sWindow: cadenceSPM(stepCount: stepCount30sWindow.sum(), duration: stepCount30sWindow.duration()),
             cadenceSPM60sWindow: cadenceSPM(stepCount: stepCount60sWindow.sum(), duration: stepCount60sWindow.duration()),
-            distanceMeters: lastPoint?.distance ?? 0,
             strideLengthMPS: strideLengthMPS(distance: distance60sWindow.sum(), stepCount: stepCount60sWindow.sum()),
             sessionElevationGainMeters: elevationGainSessionTotal,
             elevationGainMeters30sWindow: elevationGainSessionTotal30sWindow.sum(),
