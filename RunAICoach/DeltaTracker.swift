@@ -1,10 +1,3 @@
-//
-//  DeltaTracker.swift
-//  RunAICoach
-//
-//  Created by Nestor Oprysk on 5/17/25.
-//
-
 import Foundation
 
 final class DeltaTracker {

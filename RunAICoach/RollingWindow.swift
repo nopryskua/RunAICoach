@@ -1,10 +1,3 @@
-//
-//  RollingWindow.swift
-//  RunAICoach
-//
-//  Created by Nestor Oprysk on 5/14/25.
-//
-
 import Collections
 import Foundation
 

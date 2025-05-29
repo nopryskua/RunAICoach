@@ -1,10 +1,3 @@
-//
-//  SessionTotal.swift
-//  RunAICoach
-//
-//  Created by Nestor Oprysk on 5/14/25.
-//
-
 import Foundation
 
 final class SessionTotal {

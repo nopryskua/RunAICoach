@@ -1,10 +1,3 @@
-//
-//  BarometricElevationTracker.swift
-//  RunAICoach
-//
-//  Created by Nestor Oprysk on 5/6/25.
-//
-
 import CoreMotion
 import os.log
 

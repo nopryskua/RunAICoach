@@ -1,10 +1,3 @@
-//
-//  SpeechManager.swift
-//  RunAICoach
-//
-//  Created by Nestor Oprysk on 5/3/25.
-//
-
 import AVFoundation
 import Foundation
 import os.log

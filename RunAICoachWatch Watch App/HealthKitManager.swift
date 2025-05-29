@@ -1,10 +1,3 @@
-//
-//  HealthKitManager.swift
-//  RunAICoachWatch Watch App
-//
-//  Created by Nestor Oprysk on 5/3/25.
-//
-
 import os.log
 import WatchConnectivity
 

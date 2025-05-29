@@ -1,10 +1,3 @@
-//
-//  PhoneSessionManager.swift
-//  RunAICoach
-//
-//  Created by Nestor Oprysk on 5/3/25.
-//
-
 import os.log
 import WatchConnectivity
 
@@ -20,6 +13,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private let metricsPreprocessor = MetricsPreprocessor()
     private var feedbackManager: FeedbackManager!
     private var isExecutingFeedbackLoop = false
+    private var openAIFeedbackGenerator: OpenAIFeedbackGenerator?
 
     // MARK: - Published Properties
 
@@ -31,6 +25,9 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         // Try to get API key from Config, fallback to nil if not available
         let apiKey = try? Config.openAIApiKey
         speechManager = SpeechManager(openAIApiKey: apiKey)
+        if let apiKey = apiKey {
+            openAIFeedbackGenerator = OpenAIFeedbackGenerator(apiKey: apiKey)
+        }
 
         super.init()
 
@@ -54,13 +51,13 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
             guard let self = self else { return "No metrics available" }
 
             // Generate feedback text based on current metrics and history
-            let feedback = self.generateFeedback(current: current, rawMetrics: rawMetrics, history: history)
+            let feedback = try await self.generateFeedback(current: current, rawMetrics: rawMetrics, history: history)
 
             // Speak the feedback
-            self.speakFeedback(feedback)
+            self.speakFeedback(feedback.text)
 
             // Return the text for history
-            return feedback
+            return feedback.text
         }
 
         setupWatchConnectivity()
@@ -184,14 +181,19 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         speechManager.speak(text)
     }
 
-    private func generateFeedback(current: Aggregates, rawMetrics _: MetricPoint?, history _: [Feedback]) -> String {
-        // TODO: Call API with metrics to get text
-        guard let jsonData = try? JSONEncoder().encode(current) else {
-            return "Failed to encode metrics"
+    private func generateFeedback(current: Aggregates, rawMetrics: MetricPoint?, history: [Feedback]) async throws -> OpenAIResponse {
+        // If we don't have an OpenAI API key, throw an error
+        guard let generator = openAIFeedbackGenerator else {
+            throw NSError(domain: "PhoneSessionManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "OpenAI API key not configured"])
         }
 
-        let jsonString = String(data: jsonData, encoding: .utf8)
-        return jsonString ?? "No metrics available"
+        // Generate feedback using the OpenAI generator
+        return try await generator.generateFeedback(
+            current: current,
+            rawMetrics: rawMetrics,
+            history: history,
+            previousResponseId: history.last?.responseId
+        )
     }
 
     func getLatestMetrics() -> MetricPoint? {

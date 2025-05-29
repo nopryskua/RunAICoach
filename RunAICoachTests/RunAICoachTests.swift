@@ -1,10 +1,3 @@
-//
-//  RunAICoachTests.swift
-//  RunAICoachTests
-//
-//  Created by Nestor Oprysk on 5/8/25.
-//
-
 @testable import RunAICoach
 import XCTest
 
@@ -858,7 +851,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "This should never be called",
-                ruleName: "NoRule"
+                ruleName: "NoRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -879,7 +873,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "AlwaysTriggerRule"
+                ruleName: "AlwaysTriggerRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -909,7 +904,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "AlwaysTriggerRule"
+                ruleName: "AlwaysTriggerRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -943,7 +939,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "AlwaysTriggerRule"
+                ruleName: "AlwaysTriggerRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -965,7 +962,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "InitialFeedbackRule"
+                ruleName: "InitialFeedbackRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -991,7 +989,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "KilometerRule"
+                ruleName: "KilometerRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -1013,7 +1012,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "FirstKilometerRule"
+                ruleName: "FirstKilometerRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -1035,7 +1035,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "PaceChangeRule"
+                ruleName: "PaceChangeRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -1057,7 +1058,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "HeartRateChangeRule"
+                ruleName: "HeartRateChangeRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -1079,7 +1081,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "ElevationChangeRule"
+                ruleName: "ElevationChangeRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -1101,7 +1104,8 @@ final class FeedbackManagerTests: XCTestCase {
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
-                ruleName: "MaxTimeRule"
+                ruleName: "MaxTimeRule",
+                responseId: nil
             )
             self?.feedbackHistory.append(feedback)
             return feedback.content
@@ -1129,5 +1133,98 @@ final class FeedbackManagerTests: XCTestCase {
             rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(12 * 60))
         )
         XCTAssertEqual(feedbackHistory.count, 2)
+    }
+
+    // MARK: - Error Handling Tests
+
+    func testErrorHandlingInTriggerFunction() {
+        // Create feedback manager with a rule that triggers and a trigger function that throws
+        feedbackManager = FeedbackManager(rules: [AlwaysTriggerRule()]) { _, _, _ in
+            throw NSError(domain: "TestError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Test error"])
+        }
+
+        // Try to trigger feedback
+        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
+
+        // Verify no feedback was recorded
+        XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be recorded when trigger function throws an error")
+    }
+}
+
+final class OpenAIFeedbackGeneratorTests: XCTestCase {
+    var generator: OpenAIFeedbackGenerator!
+
+    override func setUp() {
+        super.setUp()
+        // Try to get API key from Config
+        guard let apiKey = try? Config.openAIApiKey else {
+            XCTSkip("OpenAI API key not configured. Run 'make setup' to configure.")
+            return
+        }
+        generator = OpenAIFeedbackGenerator(apiKey: apiKey)
+    }
+
+    override func tearDown() {
+        generator = nil
+        super.tearDown()
+    }
+
+    func testGenerateFeedback() async throws {
+        // Skip test if no API key is configured
+        guard generator != nil else {
+            throw XCTSkip("OpenAI API key not configured. Run 'make setup' to configure.")
+        }
+
+        // Create test metrics
+        let current = Aggregates(
+            sessionDuration: 300, // 5 minutes
+            powerWatts30sWindowAverage: 200,
+            sessionPowerWattsAverage: 200,
+            paceMinutesPerKm30sWindowAverage: 5.5,
+            paceMinutesPerKm60sWindowAverage: 5.5,
+            paceMinutesPerKm60sWindowRateOfChange: 0.1,
+            sessionPaceMinutesPerKmAverage: 5.5,
+            heartRateBPM30sWindowAverage: 150,
+            heartRateBPM60sWindowAverage: 150,
+            heartRateBPM60sWindowRateOfChange: 2.0,
+            sessionHeartRateBPMAverage: 150,
+            sessionHeartRateBPMMin: 140,
+            sessionHeartRateBPMMax: 160,
+            cadenceSPM30sWindow: 180,
+            cadenceSPM60sWindow: 180,
+            strideLengthMPS: 1.0,
+            sessionElevationGainMeters: 10,
+            elevationGainMeters30sWindow: 1,
+            gradePercentage10sWindow: 2.0,
+            gradeAdjustedPace60sWindow: 5.7
+        )
+
+        let rawMetrics = MetricPoint(
+            heartRate: 150,
+            distance: 1000,
+            stepCount: 500,
+            activeEnergy: 100,
+            elevation: 10,
+            runningPower: 200,
+            runningSpeed: 3.0,
+            timestamp: Date(),
+            startedAt: Date().addingTimeInterval(-300)
+        )
+
+        // Generate feedback
+        let response = try await generator.generateFeedback(
+            current: current,
+            rawMetrics: rawMetrics,
+            history: [],
+            previousResponseId: nil
+        )
+
+        // Log the response
+        print("Response ID: \(response.responseId)")
+        print("Response Text: \(response.text)")
+
+        // Basic assertions
+        XCTAssertFalse(response.text.isEmpty, "Response text should not be empty")
+        XCTAssertFalse(response.responseId.isEmpty, "Response ID should not be empty")
     }
 }

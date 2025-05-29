@@ -1,10 +1,3 @@
-//
-//  FeedbackManager.swift
-//  RunAICoach
-//
-//  Created by Nestor Oprysk on 5/26/25.
-//
-
 import Foundation
 
 enum FeedbackDecision {
@@ -21,14 +14,15 @@ struct Feedback {
     let timestamp: Date
     let content: String
     let ruleName: String
+    let responseId: String?
 }
 
 class FeedbackManager {
     private let rules: [FeedbackRule]
     private var feedbackHistory: [Feedback] = []
-    private let trigger: (Aggregates, MetricPoint?, [Feedback]) -> String
+    private let trigger: (Aggregates, MetricPoint?, [Feedback]) async throws -> String
 
-    init(rules: [FeedbackRule], trigger: @escaping (Aggregates, MetricPoint?, [Feedback]) -> String) {
+    init(rules: [FeedbackRule], trigger: @escaping (Aggregates, MetricPoint?, [Feedback]) async throws -> String) {
         self.rules = rules
         self.trigger = trigger
     }
@@ -40,13 +34,22 @@ class FeedbackManager {
         for rule in rules {
             switch rule.shouldTrigger(current: current, rawMetrics: rawMetrics, history: feedbackHistory) {
             case .trigger:
-                let content = trigger(current, rawMetrics, feedbackHistory)
-                let feedback = Feedback(
-                    timestamp: now,
-                    content: content,
-                    ruleName: String(describing: type(of: rule))
-                )
-                feedbackHistory.append(feedback)
+                // Create a task to handle async feedback generation
+                Task {
+                    do {
+                        let content = try await trigger(current, rawMetrics, feedbackHistory)
+                        let feedback = Feedback(
+                            timestamp: now,
+                            content: content,
+                            ruleName: String(describing: type(of: rule)),
+                            responseId: feedbackHistory.last?.responseId
+                        )
+                        feedbackHistory.append(feedback)
+                    } catch {
+                        // Log error and continue to next rule
+                        print("Failed to generate feedback: \(error.localizedDescription)")
+                    }
+                }
                 return
 
             case .skip:
