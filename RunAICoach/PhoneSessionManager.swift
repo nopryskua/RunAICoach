@@ -33,10 +33,6 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
 
         // Create rules in order of evaluation
         let rules: [FeedbackRule] = [
-            WorkoutStateRule(
-                isWorkoutActive: { [weak self] in self?.isWorkoutActive ?? false },
-                isExecutingFeedbackLoop: { [weak self] in self?.isExecutingFeedbackLoop ?? false }
-            ),
             InitialFeedbackRule(),
             FirstKilometerRule(),
             KilometerRule(),
@@ -86,6 +82,9 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private func setupFeedbackLoop() {
         feedbackLoopTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
+
+            // Skip if workout is not active or feedback loop is executing
+            guard self.isWorkoutActive && !self.isExecutingFeedbackLoop else { return }
 
             self.isExecutingFeedbackLoop = true
             defer { self.isExecutingFeedbackLoop = false }

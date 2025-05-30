@@ -890,17 +890,13 @@ final class FeedbackManagerTests: XCTestCase {
         XCTAssertEqual(feedbackHistory[0].ruleName, "AlwaysTriggerRule")
     }
 
-    // MARK: - WorkoutStateRule Tests
+    // MARK: - PhoneSessionManager Workout State Tests
 
-    func testWorkoutStateRuleWhenInactiveAndActive() {
-        // Create feedback manager with WorkoutStateRule and AlwaysTriggerRule
-        feedbackManager = FeedbackManager(rules: [
-            WorkoutStateRule(
-                isWorkoutActive: { [weak self] in self?.isWorkoutActive ?? false },
-                isExecutingFeedbackLoop: { [weak self] in self?.isExecutingFeedbackLoop ?? false }
-            ),
-            AlwaysTriggerRule(),
-        ]) { [weak self] _, _, _ in
+    func testPhoneSessionManagerWorkoutState() {
+        let sessionManager = PhoneSessionManager.shared
+
+        // Create a test feedback manager
+        let feedbackManager = FeedbackManager(rules: [AlwaysTriggerRule()]) { [weak self] _, _, _ in
             let feedback = Feedback(
                 timestamp: Date(),
                 content: "Test feedback",
@@ -911,48 +907,36 @@ final class FeedbackManagerTests: XCTestCase {
             return feedback.content
         }
 
-        // Try to trigger feedback while workout is inactive
-        isWorkoutActive = false
-        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
+        // Test when workout is inactive
+        sessionManager.isWorkoutActive = false
+        sessionManager.isExecutingFeedbackLoop = false
+
+        // Manually trigger the timer callback
+        sessionManager.setupFeedbackLoop()
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
 
         // Verify no feedback was generated
         XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when workout is inactive")
 
-        // Try to trigger feedback while workout is active
-        isWorkoutActive = true
-        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
+        // Test when workout is active but feedback loop is executing
+        sessionManager.isWorkoutActive = true
+        sessionManager.isExecutingFeedbackLoop = true
 
-        // Verify feedback was generated
-        XCTAssertEqual(feedbackHistory.count, 1, "Feedback should be generated when workout is active")
-        XCTAssertEqual(feedbackHistory[0].ruleName, "AlwaysTriggerRule")
-    }
-
-    func testWorkoutStateRuleWhenExecutingFeedbackLoop() {
-        // Create feedback manager with WorkoutStateRule and AlwaysTriggerRule
-        feedbackManager = FeedbackManager(rules: [
-            WorkoutStateRule(
-                isWorkoutActive: { [weak self] in self?.isWorkoutActive ?? false },
-                isExecutingFeedbackLoop: { [weak self] in self?.isExecutingFeedbackLoop ?? false }
-            ),
-            AlwaysTriggerRule(),
-        ]) { [weak self] _, _, _ in
-            let feedback = Feedback(
-                timestamp: Date(),
-                content: "Test feedback",
-                ruleName: "AlwaysTriggerRule",
-                responseId: nil
-            )
-            self?.feedbackHistory.append(feedback)
-            return feedback.content
-        }
-
-        // Try to trigger feedback while feedback loop is executing
-        isWorkoutActive = true
-        isExecutingFeedbackLoop = true
-        feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
+        // Manually trigger the timer callback
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
 
         // Verify no feedback was generated
         XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when feedback loop is executing")
+
+        // Test when workout is active and feedback loop is not executing
+        sessionManager.isWorkoutActive = true
+        sessionManager.isExecutingFeedbackLoop = false
+
+        // Manually trigger the timer callback
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+
+        // Verify feedback was generated
+        XCTAssertEqual(feedbackHistory.count, 1, "Feedback should be generated when workout is active and feedback loop is not executing")
     }
 
     // MARK: - InitialFeedbackRule Tests

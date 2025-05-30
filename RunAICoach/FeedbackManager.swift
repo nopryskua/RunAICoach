@@ -62,26 +62,6 @@ class FeedbackManager {
     }
 }
 
-class WorkoutStateRule: FeedbackRule {
-    private let isWorkoutActive: () -> Bool
-    private let isExecutingFeedbackLoop: () -> Bool
-
-    init(isWorkoutActive: @escaping () -> Bool, isExecutingFeedbackLoop: @escaping () -> Bool) {
-        self.isWorkoutActive = isWorkoutActive
-        self.isExecutingFeedbackLoop = isExecutingFeedbackLoop
-    }
-
-    func shouldTrigger(current _: Aggregates, rawMetrics _: MetricPoint?, history _: [Feedback]) -> FeedbackDecision {
-        // Skip if workout is not active
-        guard isWorkoutActive() else { return .skip }
-
-        // Skip if feedback loop is currently executing
-        guard !isExecutingFeedbackLoop() else { return .skip }
-
-        return .next
-    }
-}
-
 class InitialFeedbackRule: FeedbackRule {
     private let minimumInterval: TimeInterval = 30 // 30 seconds before first feedback
 
