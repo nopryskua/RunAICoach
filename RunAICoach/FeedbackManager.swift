@@ -20,9 +20,9 @@ struct Feedback {
 class FeedbackManager {
     private let rules: [FeedbackRule]
     private var feedbackHistory: [Feedback] = []
-    private let trigger: (Aggregates, MetricPoint?, [Feedback]) async throws -> String
+    private let trigger: (Aggregates, MetricPoint?, [Feedback]) throws -> String
 
-    init(rules: [FeedbackRule], trigger: @escaping (Aggregates, MetricPoint?, [Feedback]) async throws -> String) {
+    init(rules: [FeedbackRule], trigger: @escaping (Aggregates, MetricPoint?, [Feedback]) throws -> String) {
         self.rules = rules
         self.trigger = trigger
     }
@@ -32,21 +32,18 @@ class FeedbackManager {
         for rule in rules {
             switch rule.shouldTrigger(current: current, rawMetrics: rawMetrics, history: feedbackHistory) {
             case .trigger:
-                // Create a task to handle async feedback generation
-                Task {
-                    do {
-                        let content = try await trigger(current, rawMetrics, feedbackHistory)
-                        let feedback = Feedback(
-                            timestamp: rawMetrics?.timestamp ?? Date(),
-                            content: content,
-                            ruleName: String(describing: type(of: rule)),
-                            responseId: feedbackHistory.last?.responseId
-                        )
-                        feedbackHistory.append(feedback)
-                    } catch {
-                        // Log error and continue to next rule
-                        print("Failed to generate feedback: \(error.localizedDescription)")
-                    }
+                do {
+                    let content = try trigger(current, rawMetrics, feedbackHistory)
+                    let feedback = Feedback(
+                        timestamp: rawMetrics?.timestamp ?? Date(),
+                        content: content,
+                        ruleName: String(describing: type(of: rule)),
+                        responseId: feedbackHistory.last?.responseId
+                    )
+                    feedbackHistory.append(feedback)
+                } catch {
+                    // Log error and continue to next rule
+                    print("Failed to generate feedback: \(error.localizedDescription)")
                 }
                 return
 

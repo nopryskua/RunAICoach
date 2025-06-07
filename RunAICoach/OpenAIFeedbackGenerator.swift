@@ -16,7 +16,7 @@ class OpenAIFeedbackGenerator {
         self.apiKey = apiKey
     }
 
-    func generateFeedback(current: Aggregates, rawMetrics: MetricPoint?, history _: [Feedback], previousResponseId: String?) async throws -> OpenAIResponse {
+    func generateFeedback(current: Aggregates, rawMetrics: MetricPoint?, history _: [Feedback], previousResponseId: String?) throws -> OpenAIResponse {
         guard let url = URL(string: "https://api.openai.com/v1/responses") else {
             throw NSError(domain: "OpenAIFeedbackGenerator", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
@@ -117,10 +117,31 @@ class OpenAIFeedbackGenerator {
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        // Make the API call
-        let (data, response) = try await URLSession.shared.data(for: request)
+        // Create a semaphore to make the async call synchronous
+        let semaphore = DispatchSemaphore(value: 0)
+        var responseData: Data?
+        var responseError: Error?
+        var httpResponse: HTTPURLResponse?
 
-        guard let httpResponse = response as? HTTPURLResponse else {
+        // Make the API call
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            responseData = data
+            responseError = error
+            httpResponse = response as? HTTPURLResponse
+            semaphore.signal()
+        }
+        task.resume()
+        semaphore.wait()
+
+        if let error = responseError {
+            throw error
+        }
+
+        guard let data = responseData else {
+            throw NSError(domain: "OpenAIFeedbackGenerator", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data received"])
+        }
+
+        guard let httpResponse = httpResponse else {
             throw NSError(domain: "OpenAIFeedbackGenerator", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
         }
 

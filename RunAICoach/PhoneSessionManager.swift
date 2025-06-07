@@ -48,7 +48,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
             guard let self = self else { return "No metrics available" }
 
             // Generate feedback text based on current metrics and history
-            let feedback = try await self.generateFeedback(current: current, rawMetrics: rawMetrics, history: history)
+            let feedback = try self.generateFeedback(current: current, rawMetrics: rawMetrics, history: history)
 
             // Speak the feedback
             self.speakFeedback(feedback.text)
@@ -182,14 +182,14 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         speechManager.speak(text)
     }
 
-    private func generateFeedback(current: Aggregates, rawMetrics: MetricPoint?, history: [Feedback]) async throws -> OpenAIResponse {
+    private func generateFeedback(current: Aggregates, rawMetrics: MetricPoint?, history: [Feedback]) throws -> OpenAIResponse {
         // If we don't have an OpenAI API key, throw an error
         guard let generator = openAIFeedbackGenerator else {
             throw NSError(domain: "PhoneSessionManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "OpenAI API key not configured"])
         }
 
         // Generate feedback using the OpenAI generator
-        return try await generator.generateFeedback(
+        return try generator.generateFeedback(
             current: current,
             rawMetrics: rawMetrics,
             history: history,
