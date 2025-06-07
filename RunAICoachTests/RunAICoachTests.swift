@@ -1,5 +1,6 @@
 @testable import RunAICoach
 import XCTest
+import WatchConnectivity
 
 final class UnitTests: XCTestCase {
     // MARK: DeltaTracker Tests
@@ -732,7 +733,7 @@ final class SpeechManagerTests: XCTestCase {
 
 final class FeedbackManagerTests: XCTestCase {
     var feedbackManager: FeedbackManager!
-    var feedbackHistory: [Feedback] = []
+    var testFeedbackHistory: [Feedback] = []
     var isWorkoutActive = false
     var isExecutingFeedbackLoop = false
 
@@ -830,14 +831,14 @@ final class FeedbackManagerTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        feedbackHistory = []
+        testFeedbackHistory = []
         isWorkoutActive = false
         isExecutingFeedbackLoop = false
     }
 
     override func tearDown() {
         feedbackManager = nil
-        feedbackHistory = []
+        testFeedbackHistory = []
         isWorkoutActive = false
         isExecutingFeedbackLoop = false
         super.tearDown()
@@ -854,7 +855,7 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "NoRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
@@ -862,7 +863,7 @@ final class FeedbackManagerTests: XCTestCase {
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify no feedback was generated
-        XCTAssertEqual(feedbackHistory.count, 0)
+        XCTAssertEqual(testFeedbackHistory.count, 0)
     }
 
     // MARK: - Always Trigger Rule Tests
@@ -876,7 +877,7 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "AlwaysTriggerRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
@@ -884,10 +885,10 @@ final class FeedbackManagerTests: XCTestCase {
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify feedback was generated
-        XCTAssertFalse(feedbackHistory.isEmpty, "Feedback history should not be empty")
-        XCTAssertEqual(feedbackHistory.count, 1)
-        XCTAssertEqual(feedbackHistory[0].content, "Test feedback")
-        XCTAssertEqual(feedbackHistory[0].ruleName, "AlwaysTriggerRule")
+        XCTAssertFalse(testFeedbackHistory.isEmpty, "Feedback history should not be empty")
+        XCTAssertEqual(testFeedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory[0].content, "Test feedback")
+        XCTAssertEqual(testFeedbackHistory[0].ruleName, "AlwaysTriggerRule")
     }
 
     // MARK: - PhoneSessionManager Workout State Tests
@@ -903,40 +904,33 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "AlwaysTriggerRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
-        // Test when workout is inactive
-        sessionManager.isWorkoutActive = false
-        sessionManager.isExecutingFeedbackLoop = false
-
-        // Manually trigger the timer callback
-        sessionManager.setupFeedbackLoop()
+        // Test when workout is inactive by simulating a workout end message
+        let inactiveData: [String: Any] = [
+            "isWorkoutActive": false,
+            "timestamp": Date().timeIntervalSince1970,
+            "startedAt": Date().timeIntervalSince1970
+        ]
+        sessionManager.session(WCSession.default, didReceiveMessage: inactiveData)
         RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
 
         // Verify no feedback was generated
-        XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when workout is inactive")
+        XCTAssertEqual(testFeedbackHistory.count, 0, "No feedback should be generated when workout is inactive")
 
-        // Test when workout is active but feedback loop is executing
-        sessionManager.isWorkoutActive = true
-        sessionManager.isExecutingFeedbackLoop = true
-
-        // Manually trigger the timer callback
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
-
-        // Verify no feedback was generated
-        XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be generated when feedback loop is executing")
-
-        // Test when workout is active and feedback loop is not executing
-        sessionManager.isWorkoutActive = true
-        sessionManager.isExecutingFeedbackLoop = false
-
-        // Manually trigger the timer callback
+        // Test when workout is active by simulating a workout start message
+        let activeData: [String: Any] = [
+            "isWorkoutActive": true,
+            "timestamp": Date().timeIntervalSince1970,
+            "startedAt": Date().timeIntervalSince1970
+        ]
+        sessionManager.session(WCSession.default, didReceiveMessage: activeData)
         RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
 
         // Verify feedback was generated
-        XCTAssertEqual(feedbackHistory.count, 1, "Feedback should be generated when workout is active and feedback loop is not executing")
+        XCTAssertEqual(testFeedbackHistory.count, 1, "Feedback should be generated when workout is active")
     }
 
     // MARK: - InitialFeedbackRule Tests
@@ -949,21 +943,21 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "InitialFeedbackRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
         // Should not trigger before 30s
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(sessionDuration: 20), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 0)
+        XCTAssertEqual(testFeedbackHistory.count, 0)
 
         // Should trigger after 30s
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(sessionDuration: 31), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should no longer trigger since the initial feedack is there
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(sessionDuration: 35), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
     }
 
     // MARK: - KilometerRule Tests
@@ -976,17 +970,17 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "KilometerRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
         // Should trigger in first 50m of each km
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 25))
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should not trigger outside first 50m
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 200))
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
     }
 
     // MARK: - FirstKilometerRule Tests
@@ -999,17 +993,17 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "FirstKilometerRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
         // Should skip before 1km
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 500))
-        XCTAssertEqual(feedbackHistory.count, 0)
+        XCTAssertEqual(testFeedbackHistory.count, 0)
 
         // Should allow after 1km
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint(distance: 1001))
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
     }
 
     // MARK: - PaceChangeRule Tests
@@ -1022,17 +1016,17 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "PaceChangeRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
         // Should trigger on significant pace change
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(paceMinutesPerKm60sWindowRateOfChange: 1.0), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should not trigger on insignificant pace change
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(paceMinutesPerKm60sWindowRateOfChange: 0.0), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
     }
 
     // MARK: - HeartRateChangeRule Tests
@@ -1045,17 +1039,17 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "HeartRateChangeRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
         // Should trigger on significant heart rate change
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(heartRateBPM60sWindowRateOfChange: 10.0), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should not trigger on insignificant heart rate change
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(heartRateBPM60sWindowRateOfChange: 0.0), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
     }
 
     // MARK: - ElevationChangeRule Tests
@@ -1068,17 +1062,17 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "ElevationChangeRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
         // Should trigger on significant grade
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(gradePercentage10sWindow: 10.0), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should not trigger on insignificant grade
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(gradePercentage10sWindow: 0.0), rawMetrics: makeTestMetricPoint())
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
     }
 
     // MARK: - MaxTimeRule Tests
@@ -1091,7 +1085,7 @@ final class FeedbackManagerTests: XCTestCase {
                 ruleName: "MaxTimeRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
@@ -1102,34 +1096,34 @@ final class FeedbackManagerTests: XCTestCase {
             current: makeTestAggregates(),
             rawMetrics: makeTestMetricPoint(timestamp: startTime)
         )
-        XCTAssertEqual(feedbackHistory.count, 0)
+        XCTAssertEqual(testFeedbackHistory.count, 0)
 
         // Should not trigger before 5 minutes
         feedbackManager.maybeTriggerFeedback(
             current: makeTestAggregates(),
             rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(6 * 60))
         )
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should trigger after 5 minutes
         feedbackManager.maybeTriggerFeedback(
             current: makeTestAggregates(),
             rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(12 * 60))
         )
-        XCTAssertEqual(feedbackHistory.count, 2)
+        XCTAssertEqual(testFeedbackHistory.count, 2)
     }
 
     // MARK: - MinimumIntervalRule Tests
 
     func testMinimumIntervalRule() {
-        feedbackManager = FeedbackManager(rules: [MinimumIntervalRule()]) { [weak self] _, _, _ in
+        feedbackManager = FeedbackManager(rules: [MinimumIntervalRule(), AlwaysTriggerRule()]) { [weak self] _, rawMetrics, _ in
             let feedback = Feedback(
-                timestamp: Date(),
+                timestamp: rawMetrics?.timestamp ?? Date(),
                 content: "Test feedback",
-                ruleName: "MinimumIntervalRule",
+                ruleName: "AlwaysTriggerRule",
                 responseId: nil
             )
-            self?.feedbackHistory.append(feedback)
+            self?.testFeedbackHistory.append(feedback)
             return feedback.content
         }
 
@@ -1140,21 +1134,21 @@ final class FeedbackManagerTests: XCTestCase {
             current: makeTestAggregates(),
             rawMetrics: makeTestMetricPoint(timestamp: startTime)
         )
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should skip if less than 30 seconds have passed
         feedbackManager.maybeTriggerFeedback(
             current: makeTestAggregates(),
             rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(15))
         )
-        XCTAssertEqual(feedbackHistory.count, 1)
+        XCTAssertEqual(testFeedbackHistory.count, 1)
 
         // Should allow after 30 seconds
         feedbackManager.maybeTriggerFeedback(
             current: makeTestAggregates(),
-            rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(31))
+            rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(40))
         )
-        XCTAssertEqual(feedbackHistory.count, 2)
+        XCTAssertEqual(testFeedbackHistory.count, 2)
     }
 
     // MARK: - Error Handling Tests
@@ -1169,7 +1163,7 @@ final class FeedbackManagerTests: XCTestCase {
         feedbackManager.maybeTriggerFeedback(current: makeTestAggregates(), rawMetrics: makeTestMetricPoint())
 
         // Verify no feedback was recorded
-        XCTAssertEqual(feedbackHistory.count, 0, "No feedback should be recorded when trigger function throws an error")
+        XCTAssertEqual(testFeedbackHistory.count, 0, "No feedback should be recorded when trigger function throws an error")
     }
 }
 

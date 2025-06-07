@@ -189,6 +189,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
         logger.debug("Audio player finished playing, success: \(flag)")
         currentAudioPlayer = nil
         currentOpenAICompletion = nil
+        configureAudioSessionForNormalPlayback()
         trySpeakingNext()
     }
 
@@ -196,12 +197,14 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
         logger.error("Audio player decode error: \(error?.localizedDescription ?? "unknown error")")
         currentAudioPlayer = nil
         currentOpenAICompletion = nil
+        configureAudioSessionForNormalPlayback()
         trySpeakingNext()
     }
 
     // MARK: - AVSpeechSynthesizerDelegate
 
     func speechSynthesizer(_: AVSpeechSynthesizer, didFinish _: AVSpeechUtterance) {
+        configureAudioSessionForNormalPlayback()
         trySpeakingNext()
     }
 }

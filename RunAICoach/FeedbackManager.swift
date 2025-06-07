@@ -28,8 +28,6 @@ class FeedbackManager {
     }
 
     func maybeTriggerFeedback(current: Aggregates, rawMetrics: MetricPoint?) {
-        let now = Date()
-
         // Evaluate rules in order
         for rule in rules {
             switch rule.shouldTrigger(current: current, rawMetrics: rawMetrics, history: feedbackHistory) {
@@ -39,7 +37,7 @@ class FeedbackManager {
                     do {
                         let content = try await trigger(current, rawMetrics, feedbackHistory)
                         let feedback = Feedback(
-                            timestamp: now,
+                            timestamp: rawMetrics?.timestamp ?? Date(),
                             content: content,
                             ruleName: String(describing: type(of: rule)),
                             responseId: feedbackHistory.last?.responseId
