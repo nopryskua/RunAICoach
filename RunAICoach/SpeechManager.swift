@@ -18,27 +18,36 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
         useOpenAI = openAIApiKey != nil
         super.init()
         synthesizer.delegate = self
-        configureAudioSession()
     }
 
-    private func configureAudioSession() {
+    private func configureAudioSessionForSpeaking() {
         let session = AVAudioSession.sharedInstance()
         do {
-            // Configure for playback with mixing
+            // Configure for playback with mixing and ducking while speaking
             try session.setCategory(.playback, mode: .spokenAudio, options: [.mixWithOthers, .duckOthers])
             try session.setActive(true, options: .notifyOthersOnDeactivation)
-
-            // Log audio session configuration
-            logger.info("Audio session configured successfully")
-            logger.debug("Category: \(String(describing: session.category)), Mode: \(String(describing: session.mode)), Options: \(String(describing: session.categoryOptions)), Volume: \(session.outputVolume)")
+            logger.debug("Audio session configured for speaking with ducking")
         } catch {
-            logger.error("Failed to configure audio session: \(error.localizedDescription)")
+            logger.error("Failed to configure audio session for speaking: \(error.localizedDescription)")
+        }
+    }
+
+    private func configureAudioSessionForNormalPlayback() {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            // Configure for normal playback without ducking
+            try session.setCategory(.playback, mode: .spokenAudio, options: [.mixWithOthers])
+            try session.setActive(true, options: .notifyOthersOnDeactivation)
+            logger.debug("Audio session configured for normal playback")
+        } catch {
+            logger.error("Failed to configure audio session for normal playback: \(error.localizedDescription)")
         }
     }
 
     func speak(_ text: String, completion: ((Bool) -> Void)? = nil) {
         let utterance = SpeechUtterance(text: text, completion: completion)
         DispatchQueue.main.async {
+            self.configureAudioSessionForSpeaking()
             self.utteranceQueue.append(utterance)
             self.trySpeakingNext()
         }
@@ -50,6 +59,7 @@ class SpeechManager: NSObject, AVSpeechSynthesizerDelegate, AVAudioPlayerDelegat
             self.currentAudioPlayer?.stop()
             self.currentAudioPlayer = nil
             self.utteranceQueue.removeAll()
+            self.configureAudioSessionForNormalPlayback()
         }
     }
 
