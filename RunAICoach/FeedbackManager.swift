@@ -175,3 +175,25 @@ class MaxTimeRule: FeedbackRule {
         return .next
     }
 }
+
+class MinimumIntervalRule: FeedbackRule {
+    private let minimumInterval: TimeInterval = 30 // 30 seconds minimum between feedbacks
+
+    func shouldTrigger(current _: Aggregates, rawMetrics: MetricPoint?, history: [Feedback]) -> FeedbackDecision {
+        // If we don't have raw metrics with timestamp, we can't make a decision
+        guard let metrics = rawMetrics else { return .next }
+
+        // If there's no history, we can proceed
+        guard let lastFeedback = history.last else { return .next }
+
+        // Calculate time difference between last feedback and current metrics
+        let timeSinceLastFeedback = metrics.timestamp.timeIntervalSince(lastFeedback.timestamp)
+
+        // Skip if less than minimumInterval has passed
+        if timeSinceLastFeedback < minimumInterval {
+            return .skip
+        }
+
+        return .next
+    }
+}

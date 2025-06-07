@@ -33,6 +33,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
 
         // Create rules in order of evaluation
         let rules: [FeedbackRule] = [
+            MinimumIntervalRule(),
             InitialFeedbackRule(),
             FirstKilometerRule(),
             KilometerRule(),

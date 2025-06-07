@@ -1119,6 +1119,44 @@ final class FeedbackManagerTests: XCTestCase {
         XCTAssertEqual(feedbackHistory.count, 2)
     }
 
+    // MARK: - MinimumIntervalRule Tests
+
+    func testMinimumIntervalRule() {
+        feedbackManager = FeedbackManager(rules: [MinimumIntervalRule()]) { [weak self] _, _, _ in
+            let feedback = Feedback(
+                timestamp: Date(),
+                content: "Test feedback",
+                ruleName: "MinimumIntervalRule",
+                responseId: nil
+            )
+            self?.feedbackHistory.append(feedback)
+            return feedback.content
+        }
+
+        let startTime = Date()
+
+        // First feedback should trigger (no history)
+        feedbackManager.maybeTriggerFeedback(
+            current: makeTestAggregates(),
+            rawMetrics: makeTestMetricPoint(timestamp: startTime)
+        )
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should skip if less than 30 seconds have passed
+        feedbackManager.maybeTriggerFeedback(
+            current: makeTestAggregates(),
+            rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(15))
+        )
+        XCTAssertEqual(feedbackHistory.count, 1)
+
+        // Should allow after 30 seconds
+        feedbackManager.maybeTriggerFeedback(
+            current: makeTestAggregates(),
+            rawMetrics: makeTestMetricPoint(timestamp: startTime.addingTimeInterval(31))
+        )
+        XCTAssertEqual(feedbackHistory.count, 2)
+    }
+
     // MARK: - Error Handling Tests
 
     func testErrorHandlingInTriggerFunction() {
