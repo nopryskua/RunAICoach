@@ -164,6 +164,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         feedbackLoopTimer = nil
         elevationTracker.stopTracking()
         metricsPreprocessor.clear()
+        feedbackManager.reset()
     }
 
     private func handleWorkoutStart() {

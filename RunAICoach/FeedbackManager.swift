@@ -60,6 +60,10 @@ class FeedbackManager {
             }
         }
     }
+
+    func reset() {
+        feedbackHistory.removeAll()
+    }
 }
 
 class InitialFeedbackRule: FeedbackRule {
